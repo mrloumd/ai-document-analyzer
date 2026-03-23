@@ -8,7 +8,10 @@ interface PPTPreviewProps {
   fileName: string;
 }
 
-export default function PPTPreview({ presentation, fileName }: PPTPreviewProps) {
+export default function PPTPreview({
+  presentation,
+  fileName,
+}: PPTPreviewProps) {
   const date = new Date(presentation.generatedAt).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -31,12 +34,15 @@ export default function PPTPreview({ presentation, fileName }: PPTPreviewProps) 
               {presentation.title}
             </h2>
             <p className="text-slate-500 text-xs">
-              {presentation.slides.length} slides &middot; Generated {date} &middot;{" "}
-              <span className="text-slate-400">{fileName}</span>
+              {presentation.slides.length} slides &middot; Generated {date}{" "}
+              &middot; <span className="text-slate-400">{fileName}</span>
             </p>
           </div>
           <div className="shrink-0">
-            <PPTDownloadButton presentation={presentation} fileName={fileName} />
+            <PPTDownloadButton
+              presentation={presentation}
+              fileName={fileName}
+            />
           </div>
         </div>
       </div>
@@ -64,8 +70,13 @@ export default function PPTPreview({ presentation, fileName }: PPTPreviewProps) 
             {/* Bullets */}
             <ul className="ml-9 space-y-1.5">
               {slide.bullets.map((bullet, i) => (
-                <li key={i} className="flex items-start gap-2 text-slate-300 text-sm leading-relaxed">
-                  <span className="text-brand shrink-0 mt-0.5 text-xs">&#9656;</span>
+                <li
+                  key={i}
+                  className="flex items-start gap-2 text-slate-300 text-sm leading-relaxed"
+                >
+                  <span className="text-brand shrink-0 mt-0.5 text-xs">
+                    &#9656;
+                  </span>
                   {bullet}
                 </li>
               ))}

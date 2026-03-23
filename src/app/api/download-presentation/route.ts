@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     ) {
       return Response.json(
         { error: "No valid presentation data provided." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     console.error("[download-presentation] Error:", err);
     return Response.json(
       { error: "Failed to generate PPTX file. Please try again." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

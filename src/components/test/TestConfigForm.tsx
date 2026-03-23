@@ -65,18 +65,27 @@ export default function TestConfigForm({
 
   const canSubmit = isValid && isEnabled && !isGenerating;
 
-  const set = useCallback((key: keyof FormValues) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value;
-    // Allow empty, but prevent negatives and non-numeric
-    if (raw === "" || /^\d+$/.test(raw)) {
-      setValues((prev) => ({ ...prev, [key]: raw }));
-    }
-  }, []);
+  const set = useCallback(
+    (key: keyof FormValues) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const raw = e.target.value;
+      // Allow empty, but prevent negatives and non-numeric
+      if (raw === "" || /^\d+$/.test(raw)) {
+        setValues((prev) => ({ ...prev, [key]: raw }));
+      }
+    },
+    [],
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
-    onGenerate({ total, multipleChoice: mc, fillInTheBlanks: fib, enumeration: en, essay: es });
+    onGenerate({
+      total,
+      multipleChoice: mc,
+      fillInTheBlanks: fib,
+      enumeration: en,
+      essay: es,
+    });
   };
 
   const inputCls =
@@ -116,7 +125,9 @@ export default function TestConfigForm({
         <div className="flex items-center justify-between gap-4 p-4 rounded-2xl border border-white/8 bg-white/[0.02]">
           <div>
             <p className="text-white text-sm font-medium">Total Questions</p>
-            <p className="text-slate-500 text-xs mt-0.5">Set your target question count</p>
+            <p className="text-slate-500 text-xs mt-0.5">
+              Set your target question count
+            </p>
           </div>
           <input
             type="text"
@@ -165,28 +176,58 @@ export default function TestConfigForm({
               isValid
                 ? "border border-emerald-500/20 bg-emerald-500/8 text-emerald-400"
                 : remaining > 0
-                ? "border border-amber-500/20 bg-amber-500/8 text-amber-400"
-                : "border border-red-500/20 bg-red-500/8 text-red-400",
+                  ? "border border-amber-500/20 bg-amber-500/8 text-amber-400"
+                  : "border border-red-500/20 bg-red-500/8 text-red-400",
             ].join(" ")}
           >
             {isValid ? (
               <>
-                <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-4 h-4 shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 All {total} questions allocated
               </>
             ) : remaining > 0 ? (
               <>
-                <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-4 h-4 shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 {allocated} of {total} allocated — {remaining} remaining
               </>
             ) : (
               <>
-                <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-4 h-4 shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 {allocated} allocated exceeds total of {total}
               </>
@@ -197,8 +238,18 @@ export default function TestConfigForm({
         {/* Generation error */}
         {error && (
           <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
-            <svg className="w-4 h-4 text-red-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-4 h-4 text-red-400 shrink-0 mt-0.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <p className="text-red-300 text-sm">{error}</p>
           </div>
@@ -212,17 +263,42 @@ export default function TestConfigForm({
         >
           {isGenerating ? (
             <>
-              <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              <svg
+                className="w-4 h-4 animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
               </svg>
               Generating…
             </>
           ) : (
             <>
               Generate Test
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
               </svg>
             </>
           )}

@@ -12,13 +12,16 @@ export async function POST(request: Request) {
     const config: PPTConfig | undefined = body?.config;
 
     if (!text.trim()) {
-      return Response.json({ error: "No document text provided." }, { status: 400 });
+      return Response.json(
+        { error: "No document text provided." },
+        { status: 400 },
+      );
     }
 
     if (!config) {
       return Response.json(
         { error: "No presentation configuration provided." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -27,14 +30,14 @@ export async function POST(request: Request) {
     if (!Number.isInteger(numSlides) || numSlides < 3 || numSlides > 20) {
       return Response.json(
         { error: "numSlides must be an integer between 3 and 20." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!["formal", "simple", "academic"].includes(tone)) {
       return Response.json(
         { error: "tone must be one of: formal, simple, academic." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,7 +47,7 @@ export async function POST(request: Request) {
     console.error("[generate-presentation] Error:", err);
     return Response.json(
       { error: "Failed to generate presentation. Please try again." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

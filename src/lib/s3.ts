@@ -14,7 +14,7 @@ function getS3Client(): S3Client {
 export async function uploadToS3(
   buffer: Buffer,
   key: string,
-  contentType: string
+  contentType: string,
 ): Promise<string> {
   const client = getS3Client();
   const upload = new Upload({
