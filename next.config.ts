@@ -1,0 +1,8 @@
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  // pdf-parse v2 is an ESM package — transpile it for Node.js server-side usage
+  transpilePackages: ["pdf-parse"],
+};
+
+export default nextConfig;
