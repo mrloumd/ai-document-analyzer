@@ -24,7 +24,7 @@ export default function Header() {
             </svg>
           </div>
           <span className="text-white font-semibold text-base tracking-tight">
-            DocuMind<span className="text-brand-light"> AI</span>
+            StudyMind<span className="text-brand-light"> AI</span>
           </span>
         </Link>
 

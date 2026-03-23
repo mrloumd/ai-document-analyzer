@@ -1,20 +1,46 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import FileUpload from "@/components/FileUpload";
 import ResultDisplay from "@/components/ResultDisplay";
-import type { AnalysisResult, AppState } from "@/types";
+import TestConfigForm from "@/components/TestConfigForm";
+import TestResultDisplay from "@/components/TestResultDisplay";
+import type {
+  AnalysisResult,
+  AppMode,
+  AppState,
+  AppStatus,
+  GeneratedTest,
+  TestConfig,
+  UploadStatus,
+} from "@/types";
+
+// -- State --
 
 const INITIAL_STATE: AppState = {
   status: "idle",
+  mode: "summary",
   uploadProgress: 0,
   fileName: null,
   fileSize: null,
+  extractedText: null,
   result: null,
+  testResult: null,
   error: null,
 };
+
+// -- Helpers --
+
+/** Map the richer AppStatus to what FileUpload expects */
+function toUploadStatus(s: AppStatus): UploadStatus {
+  if (s === "uploading") return "uploading";
+  if (s === "analyzing") return "analyzing";
+  if (s === "extracted" || s === "generating" || s === "done") return "done";
+  if (s === "error") return "error";
+  return "idle";
+}
 
 function uploadFile(
   file: File,
@@ -27,24 +53,15 @@ function uploadFile(
     const xhr = new XMLHttpRequest();
 
     xhr.upload.addEventListener("progress", (e) => {
-      if (e.lengthComputable) {
-        onProgress(Math.round((e.loaded / e.total) * 100));
-      }
+      if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
     });
 
     xhr.addEventListener("load", () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         try {
           const data = JSON.parse(xhr.responseText);
-          if (data.error) {
-            reject(new Error(data.error));
-          } else {
-            resolve({
-              extractedText: data.extractedText,
-              fileName: data.fileName,
-              fileSize: data.fileSize,
-            });
-          }
+          if (data.error) reject(new Error(data.error));
+          else resolve({ extractedText: data.extractedText, fileName: data.fileName, fileSize: data.fileSize });
         } catch {
           reject(new Error("Invalid response from server."));
         }
@@ -72,48 +89,183 @@ async function analyzeText(text: string): Promise<AnalysisResult> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ text }),
   });
-
   const data = await res.json();
-  if (!res.ok || data.error) {
-    throw new Error(data.error ?? "Analysis failed.");
-  }
+  if (!res.ok || data.error) throw new Error(data.error ?? "Analysis failed.");
   return data as AnalysisResult;
 }
+
+async function generateTestFromText(
+  text: string,
+  config: TestConfig
+): Promise<GeneratedTest> {
+  const res = await fetch("/api/generate-test", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, config }),
+  });
+  const data = await res.json();
+  if (!res.ok || data.error) throw new Error(data.error ?? "Test generation failed.");
+  return data as GeneratedTest;
+}
+
+// -- Mode toggle component --
+
+function ModeToggle({
+  mode,
+  onChange,
+  disabled,
+}: {
+  mode: AppMode;
+  onChange: (m: AppMode) => void;
+  disabled: boolean;
+}) {
+  const MODES: { value: AppMode; label: string; icon: React.ReactNode }[] = [
+    {
+      value: "summary",
+      label: "Summary",
+      icon: (
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      ),
+    },
+    {
+      value: "test",
+      label: "Generate Test",
+      icon: (
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+        </svg>
+      ),
+    },
+  ];
+
+  return (
+    <div className="inline-flex items-center p-1 rounded-xl bg-white/[0.04] border border-white/8 gap-1">
+      {MODES.map(({ value, label, icon }) => (
+        <button
+          key={value}
+          onClick={() => !disabled && onChange(value)}
+          disabled={disabled}
+          className={[
+            "flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150",
+            mode === value
+              ? "bg-brand text-white shadow-sm shadow-brand/30"
+              : "text-slate-400 hover:text-slate-200 disabled:cursor-not-allowed",
+          ].join(" ")}
+        >
+          {icon}
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// -- Page --
 
 export default function AnalyzePage() {
   const [state, setState] = useState<AppState>(INITIAL_STATE);
 
-  const update = (patch: Partial<AppState>) =>
-    setState((prev) => ({ ...prev, ...patch }));
+  const update = useCallback(
+    (patch: Partial<AppState>) => setState((prev) => ({ ...prev, ...patch })),
+    []
+  );
 
-  const handleFileAccepted = useCallback(async (file: File) => {
-    update({
-      status: "uploading",
-      uploadProgress: 0,
-      fileName: file.name,
-      fileSize: file.size,
-      error: null,
-      result: null,
+  // Keep mode in a ref so long-running async handlers always read the latest value
+  const modeRef = useRef<AppMode>("summary");
+  modeRef.current = state.mode;
+
+  // -- Mode change --
+  const handleModeChange = useCallback((newMode: AppMode) => {
+    setState((prev) => {
+      if (prev.mode === newMode) return prev;
+      const isBusy =
+        prev.status === "uploading" ||
+        prev.status === "analyzing" ||
+        prev.status === "generating";
+      if (isBusy) return prev;
+      return {
+        ...prev,
+        mode: newMode,
+        status: prev.extractedText ? "extracted" : "idle",
+        result: null,
+        testResult: null,
+        error: null,
+      };
     });
-
-    try {
-      const { extractedText, fileName } = await uploadFile(file, (pct) =>
-        update({ uploadProgress: pct })
-      );
-
-      update({ status: "analyzing", uploadProgress: 100 });
-      const result = await analyzeText(extractedText);
-
-      update({ status: "done", result, fileName });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Something went wrong.";
-      update({ status: "error", error: message });
-    }
   }, []);
 
+  // -- File accepted --
+  const handleFileAccepted = useCallback(
+    async (file: File) => {
+      setState((prev) => ({
+        ...prev,
+        status: "uploading",
+        uploadProgress: 0,
+        fileName: file.name,
+        fileSize: file.size,
+        extractedText: null,
+        result: null,
+        testResult: null,
+        error: null,
+      }));
+
+      try {
+        const { extractedText, fileName } = await uploadFile(file, (pct) =>
+          update({ uploadProgress: pct })
+        );
+
+        if (modeRef.current === "summary") {
+          update({ status: "analyzing", uploadProgress: 100, extractedText, fileName });
+          const result = await analyzeText(extractedText);
+          update({ status: "done", result });
+        } else {
+          update({ status: "extracted", uploadProgress: 100, extractedText, fileName });
+        }
+      } catch (err) {
+        update({
+          status: "error",
+          error: err instanceof Error ? err.message : "Something went wrong.",
+        });
+      }
+    },
+    [update]
+  );
+
+  // -- Reset (keep mode) --
   const handleReset = useCallback(() => {
-    setState(INITIAL_STATE);
+    setState((prev) => ({ ...INITIAL_STATE, mode: prev.mode }));
   }, []);
+
+  // -- Generate test --
+  const handleGenerateTest = useCallback(
+    async (config: TestConfig) => {
+      const text = state.extractedText;
+      if (!text) return;
+
+      update({ status: "generating", error: null, testResult: null });
+
+      try {
+        const testResult = await generateTestFromText(text, config);
+        update({ status: "done", testResult });
+      } catch (err) {
+        // Stay on "extracted" so the config form stays visible
+        update({
+          status: "extracted",
+          error: err instanceof Error ? err.message : "Test generation failed.",
+        });
+      }
+    },
+    [state.extractedText, update]
+  );
+
+  // -- Derived --
+  const { status, mode, result, testResult, fileName, fileSize, error } = state;
+  const uploadStatus = toUploadStatus(status);
+  const isBusy =
+    status === "uploading" || status === "analyzing" || status === "generating";
+  const hasText = !!state.extractedText;
 
   return (
     <>
@@ -142,17 +294,26 @@ export default function AnalyzePage() {
               </svg>
               Back to home
             </Link>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-              Document Analyzer
-            </h1>
-            <p className="text-slate-400 text-sm">
-              Upload your PDF or DOCX and get instant AI-powered analysis.
-            </p>
+
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">
+                  Document Analyzer
+                </h1>
+                <p className="text-slate-400 text-sm">
+                  {mode === "summary"
+                    ? "Upload your PDF or DOCX and get instant AI-powered analysis."
+                    : "Upload your document and generate a ready-to-use exam."}
+                </p>
+              </div>
+              <ModeToggle mode={mode} onChange={handleModeChange} disabled={isBusy} />
+            </div>
           </div>
         </section>
 
-        {/* -- Upload + Results -- */}
-        <section className="mx-auto max-w-3xl px-6 py-10 space-y-8">
+        {/* -- Content -- */}
+        <section className="mx-auto max-w-3xl px-6 py-10 space-y-6">
+
           {/* Upload card */}
           <div className="rounded-3xl border border-white/8 bg-white/[0.015] p-6 md:p-8 shadow-2xl shadow-black/40">
             <div className="flex items-center gap-3 mb-6">
@@ -173,24 +334,60 @@ export default function AnalyzePage() {
               </div>
               <div>
                 <h2 className="text-white font-semibold text-base">Upload Document</h2>
-                <p className="text-slate-500 text-xs mt-0.5">PDF or DOCX · Max 10 MB</p>
+                <p className="text-slate-500 text-xs mt-0.5">PDF or DOCX &middot; Max 10 MB</p>
               </div>
             </div>
 
             <FileUpload
-              status={state.status}
+              status={uploadStatus}
               uploadProgress={state.uploadProgress}
               onFileAccepted={handleFileAccepted}
               onReset={handleReset}
-              fileName={state.fileName}
-              fileSize={state.fileSize}
-              error={state.error}
+              fileName={fileName}
+              fileSize={fileSize}
+              error={uploadStatus === "error" ? error : null}
             />
           </div>
 
-          {/* Results */}
-          {state.status === "done" && state.result && state.fileName && (
-            <ResultDisplay result={state.result} fileName={state.fileName} />
+          {/* Test config form (test mode, after file extracted) */}
+          {mode === "test" && (
+            <TestConfigForm
+              isEnabled={hasText}
+              isGenerating={status === "generating"}
+              error={status === "extracted" ? error : null}
+              onGenerate={handleGenerateTest}
+            />
+          )}
+
+          {/* Generating loading card */}
+          {status === "generating" && (
+            <div className="rounded-2xl border border-brand/20 bg-brand/5 p-8 flex flex-col items-center gap-4 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-brand/15 border border-brand/25 flex items-center justify-center">
+                <svg className="w-7 h-7 text-brand animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-white font-semibold text-base">Generating your test…</p>
+                <p className="text-slate-400 text-sm mt-1">
+                  OpenAI is crafting questions from your document. This may take up to 30 seconds.
+                </p>
+              </div>
+              <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-brand-dark to-brand-light rounded-full animate-[progress-indeterminate_1.5s_ease-in-out_infinite]" />
+              </div>
+            </div>
+          )}
+
+          {/* Summary result */}
+          {status === "done" && mode === "summary" && result && fileName && (
+            <ResultDisplay result={result} fileName={fileName} />
+          )}
+
+          {/* Test result */}
+          {status === "done" && mode === "test" && testResult && fileName && (
+            <TestResultDisplay test={testResult} fileName={fileName} />
           )}
         </section>
       </main>
@@ -200,7 +397,7 @@ export default function AnalyzePage() {
         <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
           <span className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-brand" />
-            DocuMind AI
+            StudyMind AI
           </span>
           <span>Built with Next.js, TypeScript &amp; OpenAI</span>
         </div>

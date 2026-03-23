@@ -246,7 +246,7 @@ export default function HomePage() {
                 <br className="hidden sm:block" /> your documents
               </h2>
               <p className="text-slate-400 text-base max-w-xl mx-auto">
-                DocuMind AI extracts meaning from your documents so you don't have to read everything yourself.
+                StudyMind AI extracts meaning from your documents so you don't have to read everything yourself.
               </p>
             </div>
 
@@ -367,7 +367,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
           <span className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-brand" />
-            DocuMind AI
+            StudyMind AI
           </span>
           <span>Built with Next.js, TypeScript &amp; OpenAI</span>
         </div>
