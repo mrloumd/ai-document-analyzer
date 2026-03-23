@@ -234,6 +234,8 @@ export async function buildPptx(
     });
   }
 
-  const buffer = (await pptx.write({ outputType: "nodebuffer" })) as Buffer;
-  return buffer;
+  const arrayBuffer = (await pptx.write({
+    outputType: "arraybuffer",
+  })) as ArrayBuffer;
+  return Buffer.from(arrayBuffer);
 }
