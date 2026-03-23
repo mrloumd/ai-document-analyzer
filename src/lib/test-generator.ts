@@ -9,19 +9,19 @@ function buildInstructions(config: TestConfig): string {
   const parts: string[] = [];
   if (config.multipleChoice > 0)
     parts.push(
-      `${config.multipleChoice} Multiple Choice questions (each with exactly 4 options labeled "A. ...", "B. ...", "C. ...", "D. ..."; specify the correct answer as a single letter: A, B, C, or D)`
+      `${config.multipleChoice} Multiple Choice questions (each with exactly 4 options labeled "A. ...", "B. ...", "C. ...", "D. ..."; specify the correct answer as a single letter: A, B, C, or D)`,
     );
   if (config.fillInTheBlanks > 0)
     parts.push(
-      `${config.fillInTheBlanks} Fill in the Blanks questions (use exactly ____ as the blank in the sentence)`
+      `${config.fillInTheBlanks} Fill in the Blanks questions (use exactly ____ as the blank in the sentence)`,
     );
   if (config.enumeration > 0)
     parts.push(
-      `${config.enumeration} Enumeration questions (ask students to list specific items from the document)`
+      `${config.enumeration} Enumeration questions (ask students to list specific items from the document)`,
     );
   if (config.essay > 0)
     parts.push(
-      `${config.essay} Essay questions (open-ended, thought-provoking, include a short hint)`
+      `${config.essay} Essay questions (open-ended, thought-provoking, include a short hint)`,
     );
 
   return `You are an expert educator and test creator. Based on the provided document, create a comprehensive exam. Respond with ONLY valid JSON — no markdown, no code fences, no extra text.
@@ -73,7 +73,7 @@ Rules:
 
 export async function generateTest(
   text: string,
-  config: TestConfig
+  config: TestConfig,
 ): Promise<GeneratedTest> {
   const input =
     text.length > MAX_INPUT_CHARS

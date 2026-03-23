@@ -7,7 +7,11 @@ export default function Header() {
     <header className="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-[#040e0e]/80 backdrop-blur-md">
       <div className="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5" suppressHydrationWarning>
+        <Link
+          href="/"
+          className="flex items-center gap-2.5"
+          suppressHydrationWarning
+        >
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center shadow-lg shadow-brand/30">
             <svg
               className="w-4.5 h-4.5 text-white"
@@ -30,10 +34,18 @@ export default function Header() {
 
         {/* Nav */}
         <nav className="hidden md:flex items-center gap-7 text-sm text-slate-400">
-          <a href="/#features" className="hover:text-white transition-colors" suppressHydrationWarning>
+          <a
+            href="/#features"
+            className="hover:text-white transition-colors"
+            suppressHydrationWarning
+          >
             Features
           </a>
-          <a href="/#how-it-works" className="hover:text-white transition-colors" suppressHydrationWarning>
+          <a
+            href="/#how-it-works"
+            className="hover:text-white transition-colors"
+            suppressHydrationWarning
+          >
             How it works
           </a>
           <Link
@@ -47,8 +59,18 @@ export default function Header() {
 
         {/* Mobile hamburger placeholder */}
         <button className="md:hidden text-slate-400 hover:text-white transition-colors">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
           </svg>
         </button>
       </div>

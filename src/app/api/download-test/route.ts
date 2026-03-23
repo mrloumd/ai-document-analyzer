@@ -13,11 +13,18 @@ export async function POST(request: Request) {
     const rawName: string = body?.fileName ?? test?.title ?? "test";
 
     if (!test || !test.title) {
-      return Response.json({ error: "No test data provided." }, { status: 400 });
+      return Response.json(
+        { error: "No test data provided." },
+        { status: 400 },
+      );
     }
 
     // Sanitize filename
-    const safeName = rawName.replace(/[^a-zA-Z0-9_\- ]/g, "").trim().replace(/\s+/g, "_") || "test";
+    const safeName =
+      rawName
+        .replace(/[^a-zA-Z0-9_\- ]/g, "")
+        .trim()
+        .replace(/\s+/g, "_") || "test";
 
     if (format === "docx") {
       const buffer = await generateDocx(test);
@@ -42,7 +49,7 @@ export async function POST(request: Request) {
     console.error("[download-test]", err);
     return Response.json(
       { error: "Failed to generate file. Please try again." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

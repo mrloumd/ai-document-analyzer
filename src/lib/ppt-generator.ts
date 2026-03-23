@@ -50,7 +50,7 @@ Rules:
 
 export async function generatePresentation(
   text: string,
-  config: PPTConfig
+  config: PPTConfig,
 ): Promise<GeneratedPresentation> {
   const input =
     text.length > MAX_INPUT_CHARS
@@ -72,10 +72,16 @@ export async function generatePresentation(
   try {
     parsed = JSON.parse(raw);
   } catch {
-    throw new Error("Failed to parse structured presentation from AI response.");
+    throw new Error(
+      "Failed to parse structured presentation from AI response.",
+    );
   }
 
-  if (!parsed.title || !Array.isArray(parsed.slides) || parsed.slides.length === 0) {
+  if (
+    !parsed.title ||
+    !Array.isArray(parsed.slides) ||
+    parsed.slides.length === 0
+  ) {
     throw new Error("AI returned an unexpected response format.");
   }
 

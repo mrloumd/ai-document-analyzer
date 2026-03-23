@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     console.error("[analyze]", err);
     return Response.json(
       { error: "Failed to analyze the document. Please try again." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

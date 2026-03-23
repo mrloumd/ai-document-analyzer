@@ -17,9 +17,16 @@ export async function generateDocx(test: GeneratedTest): Promise<Buffer> {
   const children: InstanceType<typeof Paragraph>[] = [];
 
   const heading = (text: string, level: HLevel) =>
-    new Paragraph({ text, heading: level, spacing: { before: 400, after: 160 } });
+    new Paragraph({
+      text,
+      heading: level,
+      spacing: { before: 400, after: 160 },
+    });
 
-  const body = (text: string, opts?: { bold?: boolean; italic?: boolean; indent?: number }) =>
+  const body = (
+    text: string,
+    opts?: { bold?: boolean; italic?: boolean; indent?: number },
+  ) =>
     new Paragraph({
       children: [
         new TextRun({
@@ -34,7 +41,10 @@ export async function generateDocx(test: GeneratedTest): Promise<Buffer> {
     });
 
   const blank = () =>
-    new Paragraph({ children: [new TextRun({ text: "" })], spacing: { after: 160 } });
+    new Paragraph({
+      children: [new TextRun({ text: "" })],
+      spacing: { after: 160 },
+    });
 
   // Title + date
   children.push(
@@ -42,24 +52,27 @@ export async function generateDocx(test: GeneratedTest): Promise<Buffer> {
       children: [new TextRun({ text: test.title, bold: true, size: 36 })],
       alignment: AlignmentType.CENTER,
       spacing: { after: 120 },
-    })
+    }),
   );
   children.push(
     new Paragraph({
       children: [
         new TextRun({
-          text: `Generated: ${new Date(test.generatedAt).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}`,
+          text: `Generated: ${new Date(test.generatedAt).toLocaleDateString(
+            "en-US",
+            {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            },
+          )}`,
           color: "888888",
           size: 18,
         }),
       ],
       alignment: AlignmentType.CENTER,
       spacing: { after: 200 },
-    })
+    }),
   );
 
   // Student info line
@@ -72,15 +85,22 @@ export async function generateDocx(test: GeneratedTest): Promise<Buffer> {
         new TextRun({ text: "_".repeat(20), size: 20 }),
       ],
       spacing: { after: 200 },
-    })
+    }),
   );
 
   // Instructions
   children.push(
     new Paragraph({
-      children: [new TextRun({ text: test.instructions, italics: true, size: 20, color: "444444" })],
+      children: [
+        new TextRun({
+          text: test.instructions,
+          italics: true,
+          size: 20,
+          color: "444444",
+        }),
+      ],
       spacing: { after: 400 },
-    })
+    }),
   );
 
   let qNum = 1;
@@ -89,9 +109,12 @@ export async function generateDocx(test: GeneratedTest): Promise<Buffer> {
   if (test.multipleChoice.length > 0) {
     children.push(heading("I. Multiple Choice", HeadingLevel.HEADING_2));
     children.push(
-      body("Directions: Choose the letter of the best answer. Write your answer on the blank provided.", {
-        italic: true,
-      })
+      body(
+        "Directions: Choose the letter of the best answer. Write your answer on the blank provided.",
+        {
+          italic: true,
+        },
+      ),
     );
     children.push(blank());
 
@@ -107,7 +130,9 @@ export async function generateDocx(test: GeneratedTest): Promise<Buffer> {
   if (test.fillInTheBlanks.length > 0) {
     children.push(heading("II. Fill in the Blanks", HeadingLevel.HEADING_2));
     children.push(
-      body("Directions: Write the correct word or phrase on the blank.", { italic: true })
+      body("Directions: Write the correct word or phrase on the blank.", {
+        italic: true,
+      }),
     );
     children.push(blank());
 
@@ -122,7 +147,9 @@ export async function generateDocx(test: GeneratedTest): Promise<Buffer> {
   if (test.enumeration.length > 0) {
     children.push(heading("III. Enumeration", HeadingLevel.HEADING_2));
     children.push(
-      body("Directions: List the required items completely and in order.", { italic: true })
+      body("Directions: List the required items completely and in order.", {
+        italic: true,
+      }),
     );
     children.push(blank());
 
@@ -130,7 +157,11 @@ export async function generateDocx(test: GeneratedTest): Promise<Buffer> {
       children.push(body(`${qNum}. ${q.question}`, { bold: true }));
       const lineCount = Math.max(q.answers.length, 3);
       for (let i = 1; i <= lineCount; i++) {
-        children.push(body(`${String.fromCharCode(96 + i)}. ${"_".repeat(30)}`, { indent: 360 }));
+        children.push(
+          body(`${String.fromCharCode(96 + i)}. ${"_".repeat(30)}`, {
+            indent: 360,
+          }),
+        );
       }
       children.push(blank());
       qNum++;
@@ -141,9 +172,12 @@ export async function generateDocx(test: GeneratedTest): Promise<Buffer> {
   if (test.essay.length > 0) {
     children.push(heading("IV. Essay", HeadingLevel.HEADING_2));
     children.push(
-      body("Directions: Answer each question with a well-organized essay of at least 3-5 sentences.", {
-        italic: true,
-      })
+      body(
+        "Directions: Answer each question with a well-organized essay of at least 3-5 sentences.",
+        {
+          italic: true,
+        },
+      ),
     );
     children.push(blank());
 
@@ -163,21 +197,28 @@ export async function generateDocx(test: GeneratedTest): Promise<Buffer> {
   children.push(
     new Paragraph({
       children: [new PageBreak()],
-    })
+    }),
   );
   children.push(
     new Paragraph({
       children: [new TextRun({ text: "ANSWER KEY", bold: true, size: 28 })],
       alignment: AlignmentType.CENTER,
       spacing: { after: 300 },
-    })
+    }),
   );
   children.push(
     new Paragraph({
-      children: [new TextRun({ text: "(For Teacher Use Only)", italics: true, size: 18, color: "888888" })],
+      children: [
+        new TextRun({
+          text: "(For Teacher Use Only)",
+          italics: true,
+          size: 18,
+          color: "888888",
+        }),
+      ],
       alignment: AlignmentType.CENTER,
       spacing: { after: 400 },
-    })
+    }),
   );
 
   qNum = 1;
@@ -205,7 +246,9 @@ export async function generateDocx(test: GeneratedTest): Promise<Buffer> {
     test.enumeration.forEach((q) => {
       children.push(body(`${qNum}. ${q.question}`, { indent: 360 }));
       q.answers.forEach((a, i) =>
-        children.push(body(`    ${String.fromCharCode(96 + i + 1)}. ${a}`, { indent: 720 }))
+        children.push(
+          body(`    ${String.fromCharCode(96 + i + 1)}. ${a}`, { indent: 720 }),
+        ),
       );
       qNum++;
     });
@@ -215,7 +258,12 @@ export async function generateDocx(test: GeneratedTest): Promise<Buffer> {
   if (test.essay.length > 0) {
     children.push(body("IV. Essay", { bold: true }));
     test.essay.forEach((q) => {
-      children.push(body(`${qNum}. (Open-ended — accept well-reasoned responses)`, { indent: 360, italic: true }));
+      children.push(
+        body(`${qNum}. (Open-ended — accept well-reasoned responses)`, {
+          indent: 360,
+          italic: true,
+        }),
+      );
       qNum++;
     });
   }
@@ -266,7 +314,7 @@ export async function generatePdf(test: GeneratedTest): Promise<Buffer> {
           month: "long",
           day: "numeric",
         })}`,
-        { align: "center", width: W }
+        { align: "center", width: W },
       )
       .moveDown(0.6);
 
@@ -275,7 +323,9 @@ export async function generatePdf(test: GeneratedTest): Promise<Buffer> {
       .fontSize(11)
       .font("Helvetica")
       .fillColor("#222222")
-      .text("Name: " + "_".repeat(35) + "   Date: " + "_".repeat(18), { width: W })
+      .text("Name: " + "_".repeat(35) + "   Date: " + "_".repeat(18), {
+        width: W,
+      })
       .moveDown(0.6);
 
     // Instructions
@@ -286,7 +336,11 @@ export async function generatePdf(test: GeneratedTest): Promise<Buffer> {
       .text(test.instructions, { width: W })
       .moveDown(1);
 
-    doc.moveTo(60, doc.y).lineTo(doc.page.width - 60, doc.y).strokeColor("#dddddd").stroke();
+    doc
+      .moveTo(60, doc.y)
+      .lineTo(doc.page.width - 60, doc.y)
+      .strokeColor("#dddddd")
+      .stroke();
     doc.moveDown(0.8);
 
     let qNum = 1;
@@ -312,7 +366,9 @@ export async function generatePdf(test: GeneratedTest): Promise<Buffer> {
     // I. Multiple Choice
     if (test.multipleChoice.length > 0) {
       sectionHeader("I", "Multiple Choice");
-      directions("Directions: Choose the letter of the best answer. Write your answer on the blank provided.");
+      directions(
+        "Directions: Choose the letter of the best answer. Write your answer on the blank provided.",
+      );
 
       test.multipleChoice.forEach((q) => {
         doc
@@ -358,7 +414,9 @@ export async function generatePdf(test: GeneratedTest): Promise<Buffer> {
     // III. Enumeration
     if (test.enumeration.length > 0) {
       sectionHeader("III", "Enumeration");
-      directions("Directions: List the required items completely and in order.");
+      directions(
+        "Directions: List the required items completely and in order.",
+      );
 
       test.enumeration.forEach((q) => {
         doc
@@ -373,10 +431,10 @@ export async function generatePdf(test: GeneratedTest): Promise<Buffer> {
             .fontSize(10)
             .font("Helvetica")
             .fillColor("#333333")
-            .text(
-              `    ${String.fromCharCode(96 + i)}. ${"_".repeat(35)}`,
-              { indent: 20, width: W - 20 }
-            );
+            .text(`    ${String.fromCharCode(96 + i)}. ${"_".repeat(35)}`, {
+              indent: 20,
+              width: W - 20,
+            });
         }
         doc.moveDown(0.5);
         qNum++;
@@ -389,7 +447,7 @@ export async function generatePdf(test: GeneratedTest): Promise<Buffer> {
     if (test.essay.length > 0) {
       sectionHeader("IV", "Essay");
       directions(
-        "Directions: Answer each question with a well-organized essay of at least 3-5 sentences."
+        "Directions: Answer each question with a well-organized essay of at least 3-5 sentences.",
       );
 
       test.essay.forEach((q) => {
@@ -439,33 +497,60 @@ export async function generatePdf(test: GeneratedTest): Promise<Buffer> {
     qNum = 1;
 
     if (test.multipleChoice.length > 0) {
-      doc.fontSize(12).font("Helvetica-Bold").fillColor("#167a7f").text("I. Multiple Choice").moveDown(0.3);
+      doc
+        .fontSize(12)
+        .font("Helvetica-Bold")
+        .fillColor("#167a7f")
+        .text("I. Multiple Choice")
+        .moveDown(0.3);
       test.multipleChoice.forEach((q) => {
-        doc.fontSize(10).font("Helvetica").fillColor("#222222").text(`  ${qNum}. ${q.answer}`);
+        doc
+          .fontSize(10)
+          .font("Helvetica")
+          .fillColor("#222222")
+          .text(`  ${qNum}. ${q.answer}`);
         qNum++;
       });
       doc.moveDown(0.6);
     }
 
     if (test.fillInTheBlanks.length > 0) {
-      doc.fontSize(12).font("Helvetica-Bold").fillColor("#167a7f").text("II. Fill in the Blanks").moveDown(0.3);
+      doc
+        .fontSize(12)
+        .font("Helvetica-Bold")
+        .fillColor("#167a7f")
+        .text("II. Fill in the Blanks")
+        .moveDown(0.3);
       test.fillInTheBlanks.forEach((q) => {
-        doc.fontSize(10).font("Helvetica").fillColor("#222222").text(`  ${qNum}. ${q.answer}`);
+        doc
+          .fontSize(10)
+          .font("Helvetica")
+          .fillColor("#222222")
+          .text(`  ${qNum}. ${q.answer}`);
         qNum++;
       });
       doc.moveDown(0.6);
     }
 
     if (test.enumeration.length > 0) {
-      doc.fontSize(12).font("Helvetica-Bold").fillColor("#167a7f").text("III. Enumeration").moveDown(0.3);
+      doc
+        .fontSize(12)
+        .font("Helvetica-Bold")
+        .fillColor("#167a7f")
+        .text("III. Enumeration")
+        .moveDown(0.3);
       test.enumeration.forEach((q) => {
-        doc.fontSize(10).font("Helvetica-Bold").fillColor("#222222").text(`  ${qNum}. ${q.question}`);
+        doc
+          .fontSize(10)
+          .font("Helvetica-Bold")
+          .fillColor("#222222")
+          .text(`  ${qNum}. ${q.question}`);
         q.answers.forEach((a, i) =>
           doc
             .fontSize(10)
             .font("Helvetica")
             .fillColor("#333333")
-            .text(`      ${String.fromCharCode(96 + i + 1)}. ${a}`)
+            .text(`      ${String.fromCharCode(96 + i + 1)}. ${a}`),
         );
         qNum++;
       });
@@ -473,13 +558,20 @@ export async function generatePdf(test: GeneratedTest): Promise<Buffer> {
     }
 
     if (test.essay.length > 0) {
-      doc.fontSize(12).font("Helvetica-Bold").fillColor("#167a7f").text("IV. Essay").moveDown(0.3);
+      doc
+        .fontSize(12)
+        .font("Helvetica-Bold")
+        .fillColor("#167a7f")
+        .text("IV. Essay")
+        .moveDown(0.3);
       test.essay.forEach(() => {
         doc
           .fontSize(10)
           .font("Helvetica-Oblique")
           .fillColor("#555555")
-          .text(`  ${qNum}. Open-ended — accept well-reasoned, document-supported responses.`);
+          .text(
+            `  ${qNum}. Open-ended — accept well-reasoned, document-supported responses.`,
+          );
         qNum++;
       });
     }

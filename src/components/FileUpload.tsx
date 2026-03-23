@@ -60,7 +60,7 @@ export default function FileUpload({
       }
       onFileAccepted(file);
     },
-    [onFileAccepted]
+    [onFileAccepted],
   );
 
   const handleDrop = useCallback(
@@ -71,7 +71,7 @@ export default function FileUpload({
       const file = e.dataTransfer.files[0];
       if (file) handleFile(file);
     },
-    [handleFile, isActive]
+    [handleFile, isActive],
   );
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -90,7 +90,7 @@ export default function FileUpload({
       // reset input so same file can be re-selected after reset
       e.target.value = "";
     },
-    [handleFile]
+    [handleFile],
   );
 
   const handleClick = useCallback(() => {
@@ -121,9 +121,7 @@ export default function FileUpload({
           <div
             className={[
               "w-16 h-16 rounded-2xl flex items-center justify-center transition-colors",
-              isDragging
-                ? "bg-brand/20"
-                : "bg-white/5",
+              isDragging ? "bg-brand/20" : "bg-white/5",
             ].join(" ")}
           >
             <svg
@@ -316,7 +314,11 @@ export default function FileUpload({
               stroke="currentColor"
               strokeWidth={2}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 13l4 4L19 7"
+              />
             </svg>
           </div>
           <div className="min-w-0">

@@ -10,10 +10,26 @@ interface PPTConfigFormProps {
   onGenerate: (config: PPTConfig) => void;
 }
 
-const TONES: { value: PPTConfig["tone"]; label: string; description: string }[] = [
-  { value: "formal", label: "Formal", description: "Professional, structured, business-ready" },
-  { value: "simple", label: "Simple", description: "Clear, accessible, plain language" },
-  { value: "academic", label: "Academic", description: "Scholarly, precise, research-grade" },
+const TONES: {
+  value: PPTConfig["tone"];
+  label: string;
+  description: string;
+}[] = [
+  {
+    value: "formal",
+    label: "Formal",
+    description: "Professional, structured, business-ready",
+  },
+  {
+    value: "simple",
+    label: "Simple",
+    description: "Clear, accessible, plain language",
+  },
+  {
+    value: "academic",
+    label: "Academic",
+    description: "Scholarly, precise, research-grade",
+  },
 ];
 
 function toInt(v: string): number {
@@ -44,15 +60,15 @@ export default function PPTConfigForm({
     numSlides === ""
       ? ""
       : isValidSlides
-      ? "text-emerald-400"
-      : "text-rose-400";
+        ? "text-emerald-400"
+        : "text-rose-400";
 
   const statusMsg =
     numSlides === ""
       ? null
       : isValidSlides
-      ? `Ready — ${n} slide${n === 1 ? "" : "s"}, ${tone} tone`
-      : "Enter a number between 3 and 20";
+        ? `Ready — ${n} slide${n === 1 ? "" : "s"}, ${tone} tone`
+        : "Enter a number between 3 and 20";
 
   return (
     <div className="rounded-3xl border border-white/8 bg-white/[0.015] p-6 md:p-8 shadow-2xl shadow-black/40">
@@ -74,7 +90,9 @@ export default function PPTConfigForm({
           </svg>
         </div>
         <div>
-          <h2 className="text-white font-semibold text-base">Presentation Settings</h2>
+          <h2 className="text-white font-semibold text-base">
+            Presentation Settings
+          </h2>
           <p className="text-slate-500 text-xs mt-0.5">
             Configure your AI-generated slide deck
           </p>
@@ -83,8 +101,18 @@ export default function PPTConfigForm({
 
       {!isEnabled && (
         <div className="mb-5 flex items-center gap-2 rounded-xl bg-white/[0.03] border border-white/8 px-4 py-3 text-sm text-slate-500">
-          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-4 h-4 shrink-0"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
           Upload a document above to unlock presentation generation.
         </div>
@@ -95,7 +123,9 @@ export default function PPTConfigForm({
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-3">
             Number of slides
-            <span className="ml-2 text-xs text-slate-500 font-normal">(3–20)</span>
+            <span className="ml-2 text-xs text-slate-500 font-normal">
+              (3–20)
+            </span>
           </label>
           <div className="flex items-center gap-4">
             <input
@@ -105,7 +135,8 @@ export default function PPTConfigForm({
               value={numSlides}
               onChange={(e) => {
                 const v = e.target.value;
-                if (v === "" || (/^\d+$/.test(v) && parseInt(v) <= 20)) setNumSlides(v);
+                if (v === "" || (/^\d+$/.test(v) && parseInt(v) <= 20))
+                  setNumSlides(v);
               }}
               disabled={isGenerating}
               className="w-24 bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-white text-sm text-center focus:outline-none focus:border-brand/50 focus:bg-white/[0.06] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -145,8 +176,12 @@ export default function PPTConfigForm({
                     : "bg-white/[0.02] border-white/8 text-slate-400 hover:border-white/15 hover:text-slate-300",
                 ].join(" ")}
               >
-                <span className="text-sm font-semibold leading-none">{label}</span>
-                <span className="text-xs opacity-70 leading-tight">{description}</span>
+                <span className="text-sm font-semibold leading-none">
+                  {label}
+                </span>
+                <span className="text-xs opacity-70 leading-tight">
+                  {description}
+                </span>
               </button>
             ))}
           </div>
@@ -167,8 +202,18 @@ export default function PPTConfigForm({
         {/* Generation error */}
         {error && (
           <div className="flex items-start gap-2 rounded-xl bg-rose-500/10 border border-rose-500/20 px-4 py-3 text-sm text-rose-400">
-            <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <svg
+              className="w-4 h-4 mt-0.5 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
             </svg>
             {error}
           </div>
@@ -182,17 +227,42 @@ export default function PPTConfigForm({
         >
           {isGenerating ? (
             <>
-              <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              <svg
+                className="w-4 h-4 animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
               </svg>
               Generating…
             </>
           ) : (
             <>
               Generate Presentation
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
               </svg>
             </>
           )}

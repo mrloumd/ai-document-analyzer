@@ -84,9 +84,9 @@ export type AppMode = "summary" | "test" | "presentation";
 export type AppStatus =
   | "idle"
   | "uploading"
-  | "extracted"   // text extracted, waiting for test config (test mode only)
-  | "analyzing"   // summary AI call in progress
-  | "generating"  // test AI call in progress
+  | "extracted" // text extracted, waiting for test config (test mode only)
+  | "analyzing" // summary AI call in progress
+  | "generating" // test AI call in progress
   | "done"
   | "error";
 

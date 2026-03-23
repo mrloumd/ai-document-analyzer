@@ -11,7 +11,8 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 const ACCEPTED_TYPES: Record<string, "pdf" | "docx"> = {
   "application/pdf": "pdf",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+    "docx",
 };
 
 export async function POST(request: Request) {
@@ -26,15 +27,14 @@ export async function POST(request: Request) {
     if (file.size > MAX_FILE_SIZE) {
       return Response.json(
         { error: "File exceeds the 10 MB limit." },
-        { status: 413 }
+        { status: 413 },
       );
     }
 
     // Determine type by MIME or extension fallback
     const ext = file.name.split(".").pop()?.toLowerCase();
     const mimeType = file.type || "";
-    let fileType: "pdf" | "docx" | null =
-      ACCEPTED_TYPES[mimeType] ?? null;
+    let fileType: "pdf" | "docx" | null = ACCEPTED_TYPES[mimeType] ?? null;
 
     if (!fileType) {
       if (ext === "pdf") fileType = "pdf";
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     if (!fileType) {
       return Response.json(
         { error: "Unsupported file type. Please upload a PDF or DOCX file." },
-        { status: 422 }
+        { status: 422 },
       );
     }
 
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     if (!extractedText.trim()) {
       return Response.json(
         { error: "No readable text found in the document." },
-        { status: 422 }
+        { status: 422 },
       );
     }
 
@@ -92,7 +92,7 @@ export async function POST(request: Request) {
     console.error("[upload]", err);
     return Response.json(
       { error: "Failed to process the file. Please try again." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
