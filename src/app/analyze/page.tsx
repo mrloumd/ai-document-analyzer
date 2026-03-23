@@ -4,11 +4,11 @@ import { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import FileUpload from "@/components/FileUpload";
-import ResultDisplay from "@/components/ResultDisplay";
-import TestConfigForm from "@/components/TestConfigForm";
-import TestResultDisplay from "@/components/TestResultDisplay";
-import PPTConfigForm from "@/components/PPTConfigForm";
-import PPTPreview from "@/components/PPTPreview";
+import ResultDisplay from "@/components/summary/ResultDisplay";
+import TestConfigForm from "@/components/test/TestConfigForm";
+import TestResultDisplay from "@/components/test/TestResultDisplay";
+import PPTConfigForm from "@/components/presentation/PPTConfigForm";
+import PPTPreview from "@/components/presentation/PPTPreview";
 import type {
   AnalysisResult,
   AppMode,

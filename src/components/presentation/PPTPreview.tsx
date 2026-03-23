@@ -1,7 +1,7 @@
 "use client";
 
 import type { GeneratedPresentation } from "@/types";
-import PPTDownloadButton from "@/components/PPTDownloadButton";
+import PPTDownloadButton from "@/components/presentation/PPTDownloadButton";
 
 interface PPTPreviewProps {
   presentation: GeneratedPresentation;
