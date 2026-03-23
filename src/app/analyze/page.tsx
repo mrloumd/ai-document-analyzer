@@ -129,6 +129,7 @@ export default function AnalyzePage() {
             <Link
               href="/"
               className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors mb-5 group"
+              suppressHydrationWarning
             >
               <svg
                 className="w-3 h-3 group-hover:-translate-x-0.5 transition-transform"

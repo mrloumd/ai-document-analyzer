@@ -7,7 +7,7 @@ export default function Header() {
     <header className="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-[#040e0e]/80 backdrop-blur-md">
       <div className="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5">
+        <Link href="/" className="flex items-center gap-2.5" suppressHydrationWarning>
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center shadow-lg shadow-brand/30">
             <svg
               className="w-4.5 h-4.5 text-white"
@@ -39,6 +39,7 @@ export default function Header() {
           <Link
             href="/analyze"
             className="px-4 py-1.5 rounded-lg bg-brand-dark hover:bg-brand text-white transition-colors font-medium"
+            suppressHydrationWarning
           >
             Get started
           </Link>

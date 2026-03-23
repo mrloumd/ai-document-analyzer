@@ -116,6 +116,7 @@ export default function HomePage() {
               <Link
                 href="/analyze"
                 className="px-6 py-3 rounded-xl bg-brand hover:bg-brand-light text-white font-semibold text-sm transition-colors flex items-center gap-2"
+                suppressHydrationWarning
               >
                 Start Analyzing
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -125,6 +126,7 @@ export default function HomePage() {
               <a
                 href="#features"
                 className="px-6 py-3 rounded-xl border border-white/10 text-slate-300 hover:text-white hover:border-white/20 font-medium text-sm transition-colors"
+                suppressHydrationWarning
               >
                 See Features
               </a>
@@ -349,6 +351,7 @@ export default function HomePage() {
             <Link
               href="/analyze"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-brand hover:bg-brand-light text-white font-semibold text-base transition-colors"
+              suppressHydrationWarning
             >
               Start Analyzing
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
