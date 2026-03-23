@@ -7,12 +7,16 @@ import FileUpload from "@/components/FileUpload";
 import ResultDisplay from "@/components/ResultDisplay";
 import TestConfigForm from "@/components/TestConfigForm";
 import TestResultDisplay from "@/components/TestResultDisplay";
+import PPTConfigForm from "@/components/PPTConfigForm";
+import PPTPreview from "@/components/PPTPreview";
 import type {
   AnalysisResult,
   AppMode,
   AppState,
   AppStatus,
+  GeneratedPresentation,
   GeneratedTest,
+  PPTConfig,
   TestConfig,
   UploadStatus,
 } from "@/types";
@@ -28,6 +32,7 @@ const INITIAL_STATE: AppState = {
   extractedText: null,
   result: null,
   testResult: null,
+  presentationResult: null,
   error: null,
 };
 
@@ -108,6 +113,20 @@ async function generateTestFromText(
   return data as GeneratedTest;
 }
 
+async function generatePresentationFromText(
+  text: string,
+  config: PPTConfig
+): Promise<GeneratedPresentation> {
+  const res = await fetch("/api/generate-presentation", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, config }),
+  });
+  const data = await res.json();
+  if (!res.ok || data.error) throw new Error(data.error ?? "Presentation generation failed.");
+  return data as GeneratedPresentation;
+}
+
 // -- Mode toggle component --
 
 function ModeToggle({
@@ -138,6 +157,15 @@ function ModeToggle({
         </svg>
       ),
     },
+    {
+      value: "presentation",
+      label: "Presentation",
+      icon: (
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+        </svg>
+      ),
+    },
   ];
 
   return (
@@ -148,14 +176,14 @@ function ModeToggle({
           onClick={() => !disabled && onChange(value)}
           disabled={disabled}
           className={[
-            "flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150",
+            "flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150",
             mode === value
               ? "bg-brand text-white shadow-sm shadow-brand/30"
               : "text-slate-400 hover:text-slate-200 disabled:cursor-not-allowed",
           ].join(" ")}
         >
           {icon}
-          {label}
+          <span className="hidden sm:inline">{label}</span>
         </button>
       ))}
     </div>
@@ -191,6 +219,7 @@ export default function AnalyzePage() {
         status: prev.extractedText ? "extracted" : "idle",
         result: null,
         testResult: null,
+        presentationResult: null,
         error: null,
       };
     });
@@ -208,6 +237,7 @@ export default function AnalyzePage() {
         extractedText: null,
         result: null,
         testResult: null,
+        presentationResult: null,
         error: null,
       }));
 
@@ -221,6 +251,7 @@ export default function AnalyzePage() {
           const result = await analyzeText(extractedText);
           update({ status: "done", result });
         } else {
+          // test and presentation modes: wait for config
           update({ status: "extracted", uploadProgress: 100, extractedText, fileName });
         }
       } catch (err) {
@@ -260,8 +291,30 @@ export default function AnalyzePage() {
     [state.extractedText, update]
   );
 
+  // -- Generate presentation --
+  const handleGeneratePresentation = useCallback(
+    async (config: PPTConfig) => {
+      const text = state.extractedText;
+      if (!text) return;
+
+      update({ status: "generating", error: null, presentationResult: null });
+
+      try {
+        const presentationResult = await generatePresentationFromText(text, config);
+        update({ status: "done", presentationResult });
+      } catch (err) {
+        // Stay on "extracted" so the config form stays visible
+        update({
+          status: "extracted",
+          error: err instanceof Error ? err.message : "Presentation generation failed.",
+        });
+      }
+    },
+    [state.extractedText, update]
+  );
+
   // -- Derived --
-  const { status, mode, result, testResult, fileName, fileSize, error } = state;
+  const { status, mode, result, testResult, presentationResult, fileName, fileSize, error } = state;
   const uploadStatus = toUploadStatus(status);
   const isBusy =
     status === "uploading" || status === "analyzing" || status === "generating";
@@ -303,7 +356,9 @@ export default function AnalyzePage() {
                 <p className="text-slate-400 text-sm">
                   {mode === "summary"
                     ? "Upload your PDF or DOCX and get instant AI-powered analysis."
-                    : "Upload your document and generate a ready-to-use exam."}
+                    : mode === "test"
+                    ? "Upload your document and generate a ready-to-use exam."
+                    : "Upload your document and generate a PowerPoint presentation."}
                 </p>
               </div>
               <ModeToggle mode={mode} onChange={handleModeChange} disabled={isBusy} />
@@ -359,6 +414,16 @@ export default function AnalyzePage() {
             />
           )}
 
+          {/* PPT config form (presentation mode) */}
+          {mode === "presentation" && (
+            <PPTConfigForm
+              isEnabled={hasText}
+              isGenerating={status === "generating"}
+              error={status === "extracted" ? error : null}
+              onGenerate={handleGeneratePresentation}
+            />
+          )}
+
           {/* Generating loading card */}
           {status === "generating" && (
             <div className="rounded-2xl border border-brand/20 bg-brand/5 p-8 flex flex-col items-center gap-4 text-center">
@@ -369,9 +434,15 @@ export default function AnalyzePage() {
                 </svg>
               </div>
               <div>
-                <p className="text-white font-semibold text-base">Generating your test…</p>
+                <p className="text-white font-semibold text-base">
+                  {mode === "presentation"
+                    ? "Generating your presentation…"
+                    : "Generating your test…"}
+                </p>
                 <p className="text-slate-400 text-sm mt-1">
-                  OpenAI is crafting questions from your document. This may take up to 30 seconds.
+                  {mode === "presentation"
+                    ? "OpenAI is creating your slide outline from your document. This may take up to 30 seconds."
+                    : "OpenAI is crafting questions from your document. This may take up to 30 seconds."}
                 </p>
               </div>
               <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
@@ -388,6 +459,11 @@ export default function AnalyzePage() {
           {/* Test result */}
           {status === "done" && mode === "test" && testResult && fileName && (
             <TestResultDisplay test={testResult} fileName={fileName} />
+          )}
+
+          {/* Presentation result */}
+          {status === "done" && mode === "presentation" && presentationResult && fileName && (
+            <PPTPreview presentation={presentationResult} fileName={fileName} />
           )}
         </section>
       </main>

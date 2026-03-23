@@ -79,7 +79,7 @@ export interface GeneratedTest {
 
 // -- App state --
 
-export type AppMode = "summary" | "test";
+export type AppMode = "summary" | "test" | "presentation";
 
 export type AppStatus =
   | "idle"
@@ -99,5 +99,25 @@ export interface AppState {
   extractedText: string | null;
   result: AnalysisResult | null;
   testResult: GeneratedTest | null;
+  presentationResult: GeneratedPresentation | null;
   error: string | null;
+}
+
+// -- Presentation Generator types --
+
+export interface PPTConfig {
+  numSlides: number;
+  tone: "formal" | "simple" | "academic";
+}
+
+export interface GeneratedSlide {
+  slideNumber: number;
+  title: string;
+  bullets: string[];
+}
+
+export interface GeneratedPresentation {
+  title: string;
+  slides: GeneratedSlide[];
+  generatedAt: string;
 }
