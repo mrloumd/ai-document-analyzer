@@ -4,13 +4,30 @@ An AI-powered document analyzer that lets you upload PDFs and DOCX files to get 
 
 ## Features
 
-- **Document Analysis** — Upload PDF or DOCX files and get an AI-generated summary
-- **Test Generation** — Generate multiple-choice or open-ended practice tests from your document
-- **Presentation Generation** — Auto-generate a PowerPoint presentation from your document
+- **Document Analysis** — Upload PDF or DOCX files and get an AI-generated summary with key points and insights
+- **Test Generation** — Generate multiple-choice, fill-in-the-blank, enumeration, and essay questions from your document
+- **Presentation Generation** — Auto-generate a PowerPoint presentation with customizable templates
 - **Download** — Export tests as PDF/DOCX and presentations as PPTX
 - **Authentication** — Google OAuth via NextAuth.js
 - **Credit System** — Each action (analyze, test, presentation) costs 1 credit
+- **Plan Tiers** — Free plan with limits; purchase credits to unlock full access
 - **Payments** — Buy credit packs via PayMongo (one-time purchase, no subscription)
+
+## Plan Limits
+
+| Feature               | Free Plan         | Paid (Credits)  |
+| --------------------- | ----------------- | --------------- |
+| Test questions        | Up to 10          | Unlimited       |
+| Presentation slides   | Up to 5           | Up to 20        |
+| PPT templates         | Default - Dark    | All 3 templates |
+
+### PPT Templates
+
+| Template      | Style                          | Availability |
+| ------------- | ------------------------------ | ------------ |
+| Default - Dark | Dark teal background           | Free         |
+| Light         | White background, teal accents | Paid         |
+| Classic       | Black & white, print-ready     | Paid         |
 
 ## Tech Stack
 
@@ -84,12 +101,19 @@ Uses MongoDB Atlas with two separate databases — one for development and one f
 
 ### Collections
 
-| Collection             | Description                                |
-| ---------------------- | ------------------------------------------ |
-| `users`                | User accounts (name, email, credits, plan) |
-| `accounts`             | OAuth provider links (Google)              |
-| `purchases`            | Credit purchase history                    |
-| `verification_tokens`  | Email verification tokens (NextAuth)       |
+| Collection            | Description                                       |
+| --------------------- | ------------------------------------------------- |
+| `users`               | User accounts (name, email, credits, plan)        |
+| `accounts`            | OAuth provider links (Google)                     |
+| `purchases`           | Credit purchase history                           |
+| `verification_tokens` | Email verification tokens (NextAuth)              |
+
+### User Plan Field
+
+The `plan` field on users can be:
+- `"free"` — default for new users, limited features
+- `"paid"` — set after successful PayMongo payment
+- `"unpaid"` — set if payment fails or is refunded
 
 ## Credit Packs
 
@@ -102,6 +126,8 @@ Prices displayed in USD, processed in PHP via PayMongo.
 
 ## Deployment
 
+### Environment Variables
+
 Set all environment variables in your hosting platform (e.g. Vercel), replacing dev values with production ones:
 
 ```env
@@ -112,7 +138,23 @@ PAYMONGO_PUBLIC_KEY=pk_live_...
 PAYMONGO_WEBHOOK_SECRET=whsk_...
 ```
 
-Add a PayMongo webhook in the dashboard pointing to:
+### Google OAuth Setup
+
+For Google sign-in to work in production, you must whitelist your production URL in [Google Cloud Console](https://console.cloud.google.com/):
+
+1. Go to **APIs & Services** → **Credentials** → your OAuth 2.0 Client ID
+2. Under **Authorized JavaScript origins**, add:
+   ```
+   https://yourdomain.com
+   ```
+3. Under **Authorized redirect URIs**, add:
+   ```
+   https://yourdomain.com/api/auth/callback/google
+   ```
+
+### PayMongo Webhook
+
+Add a webhook in the PayMongo dashboard pointing to:
 
 ```
 https://yourdomain.com/api/webhooks/paymongo
