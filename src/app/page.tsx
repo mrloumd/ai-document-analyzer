@@ -392,7 +392,7 @@ export default function HomePage() {
                 One document, three powerful outputs
               </h2>
               <p className="text-slate-400 text-base max-w-xl mx-auto">
-                StudyMind AI turns your documents into summaries, exams, and
+                StudyMind turns your documents into summaries, exams, and
                 presentations — so you can teach, share, and present faster.
               </p>
             </div>
@@ -431,8 +431,8 @@ export default function HomePage() {
                 Built for educators, students &amp; professionals
               </h2>
               <p className="text-slate-400 text-base max-w-xl mx-auto">
-                Whether you are in a classroom or a boardroom, StudyMind AI
-                saves you hours.
+                Whether you are in a classroom or a boardroom, StudyMind saves
+                you hours.
               </p>
             </div>
 
@@ -658,7 +658,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
           <span className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-brand" />
-            StudyMind AI
+            StudyMind
           </span>
           <span>Built with Next.js &amp; TypeScript</span>
         </div>
