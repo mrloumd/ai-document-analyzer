@@ -87,6 +87,20 @@ export default function TestConfigForm({
     [maxTotal],
   );
 
+  const handleAutoDistribute = useCallback(() => {
+    const t = toInt(values.total);
+    if (t < 1) return;
+    const base = Math.floor(t / 4);
+    const rem = t % 4;
+    setValues((prev) => ({
+      ...prev,
+      multipleChoice: String(base + (rem > 0 ? 1 : 0)),
+      fillInTheBlanks: String(base + (rem > 1 ? 1 : 0)),
+      enumeration: String(base + (rem > 2 ? 1 : 0)),
+      essay: String(base),
+    }));
+  }, [values.total]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
@@ -168,9 +182,19 @@ export default function TestConfigForm({
 
         {/* Question Types */}
         <div className="space-y-2">
-          <p className="text-slate-400 text-xs font-medium uppercase tracking-wider px-1">
-            Question Types
-          </p>
+          <div className="flex items-center justify-between px-1">
+            <p className="text-slate-400 text-xs font-medium uppercase tracking-wider">
+              Question Types
+            </p>
+            <button
+              type="button"
+              onClick={handleAutoDistribute}
+              disabled={!isEnabled || isGenerating || toInt(values.total) < 1}
+              className="text-xs text-brand hover:text-brand-light transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Auto-distribute
+            </button>
+          </div>
           <div className="rounded-2xl border border-white/8 bg-white/[0.02] overflow-hidden divide-y divide-white/5">
             {TYPES.map(({ key, label, icon }) => (
               <div key={key} className="flex items-center gap-4 px-4 py-3">
@@ -278,6 +302,14 @@ export default function TestConfigForm({
             </svg>
             <p className="text-red-300 text-sm">{error}</p>
           </div>
+        )}
+
+        {/* Credit notice */}
+        {isEnabled && (
+          <p className="text-center text-xs text-slate-500">
+            Generating will use{" "}
+            <span className="text-slate-300 font-medium">1 credit</span>
+          </p>
         )}
 
         {/* Submit */}

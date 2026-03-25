@@ -60,55 +60,59 @@ function toUploadStatus(s: AppStatus): UploadStatus {
   return "idle";
 }
 
-function uploadFile(
+function startUpload(
   file: File,
   onProgress: (pct: number) => void,
-): Promise<{ extractedText: string; fileName: string; fileSize: number }> {
-  return new Promise((resolve, reject) => {
-    const formData = new FormData();
-    formData.append("file", file);
+): [Promise<{ extractedText: string; fileName: string; fileSize: number }>, () => void] {
+  let xhr!: XMLHttpRequest;
+  const promise = new Promise<{ extractedText: string; fileName: string; fileSize: number }>(
+    (resolve, reject) => {
+      const formData = new FormData();
+      formData.append("file", file);
 
-    const xhr = new XMLHttpRequest();
+      xhr = new XMLHttpRequest();
 
-    xhr.upload.addEventListener("progress", (e) => {
-      if (e.lengthComputable)
-        onProgress(Math.round((e.loaded / e.total) * 100));
-    });
+      xhr.upload.addEventListener("progress", (e) => {
+        if (e.lengthComputable)
+          onProgress(Math.round((e.loaded / e.total) * 100));
+      });
 
-    xhr.addEventListener("load", () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try {
-          const data = JSON.parse(xhr.responseText);
-          if (data.error) reject(new Error(data.error));
-          else
-            resolve({
-              extractedText: data.extractedText,
-              fileName: data.fileName,
-              fileSize: data.fileSize,
-            });
-        } catch {
-          reject(new Error("Invalid response from server."));
+      xhr.addEventListener("load", () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            const data = JSON.parse(xhr.responseText);
+            if (data.error) reject(new Error(data.error));
+            else
+              resolve({
+                extractedText: data.extractedText,
+                fileName: data.fileName,
+                fileSize: data.fileSize,
+              });
+          } catch {
+            reject(new Error("Invalid response from server."));
+          }
+        } else {
+          try {
+            const data = JSON.parse(xhr.responseText);
+            reject(new Error(data.error ?? "Upload failed."));
+          } catch {
+            reject(new Error(`Upload failed with status ${xhr.status}.`));
+          }
         }
-      } else {
-        try {
-          const data = JSON.parse(xhr.responseText);
-          reject(new Error(data.error ?? "Upload failed."));
-        } catch {
-          reject(new Error(`Upload failed with status ${xhr.status}.`));
-        }
-      }
-    });
+      });
 
-    xhr.addEventListener("error", () =>
-      reject(new Error("Network error during upload.")),
-    );
-    xhr.addEventListener("abort", () =>
-      reject(new Error("Upload was cancelled.")),
-    );
+      xhr.addEventListener("error", () =>
+        reject(new Error("Network error during upload.")),
+      );
+      xhr.addEventListener("abort", () =>
+        reject(new Error("__CANCELLED__")),
+      );
 
-    xhr.open("POST", "/api/upload");
-    xhr.send(formData);
-  });
+      xhr.open("POST", "/api/upload");
+      xhr.send(formData);
+    },
+  );
+  return [promise, () => xhr?.abort()];
 }
 
 async function analyzeText(text: string): Promise<AnalysisResult> {
@@ -268,6 +272,7 @@ export default function AnalyzePage() {
 
   const modeRef = useRef<AppMode>("summary");
   modeRef.current = state.mode;
+  const cancelUploadRef = useRef<(() => void) | null>(null);
 
   const credits = session?.user?.credits ?? 0;
   const isAuthenticated = authStatus === "authenticated";
@@ -317,9 +322,13 @@ export default function AnalyzePage() {
       setUpgradeRequired(false);
 
       try {
-        const { extractedText, fileName } = await uploadFile(file, (pct) =>
+        const [uploadPromise, cancelUpload] = startUpload(file, (pct) =>
           update({ uploadProgress: pct }),
         );
+        cancelUploadRef.current = cancelUpload;
+
+        const { extractedText, fileName } = await uploadPromise;
+        cancelUploadRef.current = null;
 
         if (modeRef.current === "summary") {
           update({
@@ -352,6 +361,7 @@ export default function AnalyzePage() {
           });
         }
       } catch (err) {
+        if (err instanceof Error && err.message === "__CANCELLED__") return;
         update({
           status: "error",
           error: err instanceof Error ? err.message : "Something went wrong.",
@@ -361,10 +371,30 @@ export default function AnalyzePage() {
     [isAuthenticated, router, update, updateSession],
   );
 
+  // -- Cancel upload --
+  const handleCancelUpload = useCallback(() => {
+    cancelUploadRef.current?.();
+    cancelUploadRef.current = null;
+    setState((prev) => ({ ...INITIAL_STATE, mode: prev.mode }));
+    setUpgradeRequired(false);
+  }, []);
+
   // -- Reset (keep mode) --
   const handleReset = useCallback(() => {
     setState((prev) => ({ ...INITIAL_STATE, mode: prev.mode }));
     setUpgradeRequired(false);
+  }, []);
+
+  // -- Regenerate (keep extracted text, go back to config) --
+  const handleRegenerate = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      status: "extracted",
+      result: null,
+      testResult: null,
+      presentationResult: null,
+      error: null,
+    }));
   }, []);
 
   // -- Generate test --
@@ -595,6 +625,7 @@ export default function AnalyzePage() {
               uploadProgress={state.uploadProgress}
               onFileAccepted={handleFileAccepted}
               onReset={handleReset}
+              onCancel={handleCancelUpload}
               fileName={fileName}
               fileSize={fileSize}
               error={uploadStatus === "error" ? error : null}
@@ -672,7 +703,20 @@ export default function AnalyzePage() {
 
           {/* Test result */}
           {status === "done" && mode === "test" && testResult && fileName && (
-            <TestResultDisplay test={testResult} fileName={fileName} />
+            <>
+              <div className="flex justify-end">
+                <button
+                  onClick={handleRegenerate}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 text-slate-400 hover:text-white hover:border-white/20 text-xs transition-colors"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Regenerate with different settings
+                </button>
+              </div>
+              <TestResultDisplay test={testResult} fileName={fileName} />
+            </>
           )}
 
           {/* Presentation result */}
@@ -680,10 +724,23 @@ export default function AnalyzePage() {
             mode === "presentation" &&
             presentationResult &&
             fileName && (
-              <PPTPreview
-                presentation={presentationResult}
-                fileName={fileName}
-              />
+              <>
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleRegenerate}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 text-slate-400 hover:text-white hover:border-white/20 text-xs transition-colors"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Regenerate with different settings
+                  </button>
+                </div>
+                <PPTPreview
+                  presentation={presentationResult}
+                  fileName={fileName}
+                />
+              </>
             )}
 
           {/* Sign-in prompt for guests */}
