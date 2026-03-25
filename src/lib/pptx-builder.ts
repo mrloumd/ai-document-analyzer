@@ -34,14 +34,14 @@ const PALETTES: Record<PPTTemplate, Palette> = {
     muted: "475569",
   },
   dark: {
-    bg: "0f172a",
-    bgSlide: "1e293b",
-    titleStrip: "0f172a",
-    brand: "6366f1",
-    brandDark: "4f46e5",
-    brandLight: "818cf8",
-    text: "e2e8f0",
-    muted: "94a3b8",
+    bg: "ffffff",
+    bgSlide: "ffffff",
+    titleStrip: "1a1a1a",
+    brand: "1a1a1a",
+    brandDark: "000000",
+    brandLight: "9ca3af",
+    text: "1a1a1a",
+    muted: "6b7280",
   },
 };
 

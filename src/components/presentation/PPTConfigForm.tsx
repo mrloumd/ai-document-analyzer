@@ -19,7 +19,7 @@ const TEMPLATES: {
 }[] = [
   {
     value: "default",
-    label: "Default",
+    label: "Default - Dark",
     description: "Dark teal — always free",
     preview: { bg: "#040e0e", strip: "#040e0e", accent: "#1E9AA0" },
   },
@@ -31,9 +31,9 @@ const TEMPLATES: {
   },
   {
     value: "dark",
-    label: "Dark",
-    description: "Slate & indigo, modern",
-    preview: { bg: "#1e293b", strip: "#0f172a", accent: "#6366f1" },
+    label: "Classic",
+    description: "Black & white, print-ready",
+    preview: { bg: "#ffffff", strip: "#1a1a1a", accent: "#1a1a1a" },
   },
 ];
 
