@@ -134,7 +134,7 @@ const FEATURES = [
 const STATS = [
   { value: "3 Tools", label: "Summary, Test, Slides" },
   { value: "PDF & DOCX", label: "Input formats" },
-  { value: "~30 sec", label: "Generation time" },
+  { value: "~30 sec", label: "Typical generation time" },
   { value: "PDF · DOCX · PPTX", label: "Export formats" },
 ];
 
@@ -523,7 +523,7 @@ export default function HomePage() {
               From document to output in three steps
             </h2>
             <p className="text-slate-400 text-base">
-              Upload once, generate anything — in under 30 seconds.
+              Upload once, generate anything — usually faster than 30 seconds.
             </p>
           </div>
 

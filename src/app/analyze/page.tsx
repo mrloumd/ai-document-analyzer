@@ -655,8 +655,8 @@ export default function AnalyzePage() {
                 </p>
                 <p className="text-slate-400 text-sm mt-1">
                   {mode === "presentation"
-                    ? "Creating your slide outline from your document. This may take up to 30 seconds."
-                    : "Crafting questions from your document. This may take up to 30 seconds."}
+                    ? "Creating your slide outline from your document. Usually faster than 30 sec — larger files may take longer."
+                    : "Crafting questions from your document. Usually faster than 30 sec — larger files may take longer."}
                 </p>
               </div>
               <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">

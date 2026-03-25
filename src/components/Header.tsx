@@ -170,6 +170,7 @@ export default function Header() {
           href="/"
           className="flex items-center gap-2.5"
           suppressHydrationWarning
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center shadow-lg shadow-brand/30">
             <svg
