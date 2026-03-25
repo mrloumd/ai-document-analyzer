@@ -110,7 +110,7 @@ const FEATURES = [
   },
   {
     title: "Secure Cloud Storage",
-    desc: "Documents are encrypted and stored securely on AWS S3. Your sensitive data is protected, private, and never shared.",
+    desc: "Documents are encrypted and stored securely in the cloud. Your sensitive data is protected, private, and never shared.",
     icon: (
       <svg
         className="w-5 h-5"

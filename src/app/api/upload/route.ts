@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
+import { getToken } from "next-auth/jwt";
 import { uploadToS3 } from "@/lib/s3";
 import { parsePdf } from "@/lib/parsers/pdf";
 import { parseDocx } from "@/lib/parsers/docx";
@@ -17,6 +17,12 @@ const ACCEPTED_TYPES: Record<string, "pdf" | "docx"> = {
 
 export async function POST(request: Request) {
   try {
+    const token = await getToken({
+      req: request as Parameters<typeof getToken>[0]["req"],
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+    const userId = (token?.sub as string | undefined) ?? "anonymous";
+
     const formData = await request.formData();
     const file = formData.get("file");
 
@@ -72,7 +78,7 @@ export async function POST(request: Request) {
     }
 
     // Upload to S3
-    const s3Key = `uploads/${uuidv4()}/${file.name}`;
+    const s3Key = `uploads/${userId}/${file.name}`;
     const contentType =
       fileType === "pdf"
         ? "application/pdf"
