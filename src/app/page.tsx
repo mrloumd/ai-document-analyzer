@@ -5,7 +5,7 @@ import { HeroButtons, BannerCTA } from "@/components/HeroCTA";
 const FEATURES = [
   {
     title: "AI Summary & Insights",
-    desc: "Get structured summaries, key points, and strategic insights from any document in seconds — powered by GPT-4o-mini.",
+    desc: "Get structured summaries, key points, and strategic insights from any document in seconds.",
     icon: (
       <svg
         className="w-5 h-5"
