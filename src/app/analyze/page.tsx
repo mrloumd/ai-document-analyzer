@@ -117,7 +117,8 @@ async function analyzeText(text: string): Promise<AnalysisResult> {
     body: JSON.stringify({ text }),
   });
   const data = await res.json();
-  if (!res.ok || data.error) throw new ApiError(data.error ?? "Analysis failed.", data.code);
+  if (!res.ok || data.error)
+    throw new ApiError(data.error ?? "Analysis failed.", data.code);
   return data as AnalysisResult;
 }
 
@@ -131,7 +132,8 @@ async function generateTestFromText(
     body: JSON.stringify({ text, config }),
   });
   const data = await res.json();
-  if (!res.ok || data.error) throw new ApiError(data.error ?? "Test generation failed.", data.code);
+  if (!res.ok || data.error)
+    throw new ApiError(data.error ?? "Test generation failed.", data.code);
   return data as GeneratedTest;
 }
 
@@ -145,7 +147,11 @@ async function generatePresentationFromText(
     body: JSON.stringify({ text, config }),
   });
   const data = await res.json();
-  if (!res.ok || data.error) throw new ApiError(data.error ?? "Presentation generation failed.", data.code);
+  if (!res.ok || data.error)
+    throw new ApiError(
+      data.error ?? "Presentation generation failed.",
+      data.code,
+    );
   return data as GeneratedPresentation;
 }
 
@@ -245,7 +251,11 @@ function ModeToggle({
 // -- Page --
 
 export default function AnalyzePage() {
-  const { data: session, status: authStatus, update: updateSession } = useSession();
+  const {
+    data: session,
+    status: authStatus,
+    update: updateSession,
+  } = useSession();
   const router = useRouter();
   const [state, setState] = useState<AppState>(INITIAL_STATE);
   const [upgradeRequired, setUpgradeRequired] = useState(false);
@@ -258,7 +268,7 @@ export default function AnalyzePage() {
   const modeRef = useRef<AppMode>("summary");
   modeRef.current = state.mode;
 
-  const tokens = session?.user?.tokens ?? 0;
+  const credits = session?.user?.credits ?? 0;
   const isAuthenticated = authStatus === "authenticated";
 
   // -- Mode change --
@@ -311,24 +321,40 @@ export default function AnalyzePage() {
         );
 
         if (modeRef.current === "summary") {
-          update({ status: "analyzing", uploadProgress: 100, extractedText, fileName });
+          update({
+            status: "analyzing",
+            uploadProgress: 100,
+            extractedText,
+            fileName,
+          });
           try {
             const result = await analyzeText(extractedText);
             update({ status: "done", result });
             await updateSession();
           } catch (err) {
-            if (err instanceof ApiError && err.code === "NO_TOKENS") {
+            if (err instanceof ApiError && err.code === "NO_CREDITS") {
               setUpgradeRequired(true);
               update({ status: "idle" });
             } else {
-              update({ status: "error", error: err instanceof Error ? err.message : "Analysis failed." });
+              update({
+                status: "error",
+                error: err instanceof Error ? err.message : "Analysis failed.",
+              });
             }
           }
         } else {
-          update({ status: "extracted", uploadProgress: 100, extractedText, fileName });
+          update({
+            status: "extracted",
+            uploadProgress: 100,
+            extractedText,
+            fileName,
+          });
         }
       } catch (err) {
-        update({ status: "error", error: err instanceof Error ? err.message : "Something went wrong." });
+        update({
+          status: "error",
+          error: err instanceof Error ? err.message : "Something went wrong.",
+        });
       }
     },
     [isAuthenticated, router, update, updateSession],
@@ -353,11 +379,15 @@ export default function AnalyzePage() {
         update({ status: "done", testResult });
         await updateSession();
       } catch (err) {
-        if (err instanceof ApiError && err.code === "NO_TOKENS") {
+        if (err instanceof ApiError && err.code === "NO_CREDTS") {
           setUpgradeRequired(true);
           update({ status: "extracted", error: null });
         } else {
-          update({ status: "extracted", error: err instanceof Error ? err.message : "Test generation failed." });
+          update({
+            status: "extracted",
+            error:
+              err instanceof Error ? err.message : "Test generation failed.",
+          });
         }
       }
     },
@@ -373,15 +403,24 @@ export default function AnalyzePage() {
       update({ status: "generating", error: null, presentationResult: null });
 
       try {
-        const presentationResult = await generatePresentationFromText(text, config);
+        const presentationResult = await generatePresentationFromText(
+          text,
+          config,
+        );
         update({ status: "done", presentationResult });
         await updateSession();
       } catch (err) {
-        if (err instanceof ApiError && err.code === "NO_TOKENS") {
+        if (err instanceof ApiError && err.code === "NO_CREDTS") {
           setUpgradeRequired(true);
           update({ status: "extracted", error: null });
         } else {
-          update({ status: "extracted", error: err instanceof Error ? err.message : "Presentation generation failed." });
+          update({
+            status: "extracted",
+            error:
+              err instanceof Error
+                ? err.message
+                : "Presentation generation failed.",
+          });
         }
       }
     },
@@ -451,11 +490,17 @@ export default function AnalyzePage() {
               </div>
               <div className="flex flex-col items-end gap-2">
                 {isAuthenticated && (
-                  <span className={`text-xs font-medium ${tokens > 0 ? "text-slate-400" : "text-rose-400"}`}>
-                    {tokens} token{tokens !== 1 ? "s" : ""} remaining
+                  <span
+                    className={`text-xs font-medium ${credits > 0 ? "text-slate-400" : "text-rose-400"}`}
+                  >
+                    {credits} credit{credits !== 1 ? "s" : ""} left
                   </span>
                 )}
-                <ModeToggle mode={mode} onChange={handleModeChange} disabled={isBusy} />
+                <ModeToggle
+                  mode={mode}
+                  onChange={handleModeChange}
+                  disabled={isBusy}
+                />
               </div>
             </div>
           </div>
@@ -463,18 +508,49 @@ export default function AnalyzePage() {
 
         {/* -- Content -- */}
         <section className="mx-auto max-w-3xl px-6 py-10 space-y-6">
-
-          {/* No tokens banner */}
-          {isAuthenticated && (tokens === 0 || upgradeRequired) && (
+          {/* No credits banner */}
+          {isAuthenticated && (credits === 0 || upgradeRequired) && (
             <div className="rounded-2xl border border-amber-500/25 bg-amber-500/8 px-5 py-4 flex items-start gap-3">
-              <svg className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              <svg
+                className="w-5 h-5 text-amber-400 shrink-0 mt-0.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+                />
               </svg>
               <div>
-                <p className="text-amber-400 font-semibold text-sm">No tokens remaining</p>
-                <p className="text-slate-400 text-xs mt-0.5">
-                  You&apos;ve used your free token. Contact us to get more tokens and keep analyzing documents.
+                <p className="text-amber-400 font-semibold text-sm">
+                  Out of credits
                 </p>
+                <p className="text-slate-400 text-xs mt-0.5">
+                  You&apos;ve used all your credits.
+                </p>
+                <Link
+                  href="/upgrade"
+                  className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand/15 border border-brand/25 text-brand-light text-xs font-medium hover:bg-brand/25 transition-colors"
+                  suppressHydrationWarning
+                >
+                  Top up
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                  </svg>
+                </Link>
               </div>
             </div>
           )}

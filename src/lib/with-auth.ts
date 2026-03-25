@@ -8,8 +8,8 @@ type AuthedHandler = (req: Request, userId: string) => Promise<Response>;
 /**
  * Wraps a route handler with:
  * 1. Session check (401 if not signed in)
- * 2. Token check (402 if tokens <= 0)
- * 3. Token deduction on 2xx response
+ * 2. Credit check (402 if credits <= 0)
+ * 3. Credit deduction on 2xx response
  */
 export function withAuth(handler: AuthedHandler) {
   return async (req: Request): Promise<Response> => {
@@ -23,11 +23,14 @@ export function withAuth(handler: AuthedHandler) {
     }
 
     await connectMongoose();
-    const user = await User.findById(session.user.id).select("tokens");
+    const user = await User.findById(session.user.id).select("credits");
 
-    if (!user || user.tokens <= 0) {
+    if (!user || user.credits <= 0) {
       return Response.json(
-        { error: "No tokens remaining. Upgrade to continue.", code: "NO_TOKENS" },
+        {
+          error: "No credits remaining. Top up to continue.",
+          code: "NO_CREDITS",
+        },
         { status: 402 },
       );
     }
@@ -35,7 +38,7 @@ export function withAuth(handler: AuthedHandler) {
     const response = await handler(req, session.user.id);
 
     if (response.status >= 200 && response.status < 300) {
-      await User.findByIdAndUpdate(session.user.id, { $inc: { tokens: -1 } });
+      await User.findByIdAndUpdate(session.user.id, { $inc: { credits: -1 } });
     }
 
     return response;

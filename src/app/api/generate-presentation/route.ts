@@ -12,10 +12,16 @@ export const POST = withAuth(async (req) => {
   const config: PPTConfig | undefined = body?.config;
 
   if (!text.trim()) {
-    return Response.json({ error: "No document text provided." }, { status: 400 });
+    return Response.json(
+      { error: "No document text provided." },
+      { status: 400 },
+    );
   }
   if (!config) {
-    return Response.json({ error: "No presentation configuration provided." }, { status: 400 });
+    return Response.json(
+      { error: "No presentation configuration provided." },
+      { status: 400 },
+    );
   }
 
   const { numSlides, tone } = config;

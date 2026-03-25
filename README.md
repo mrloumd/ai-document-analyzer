@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# StudyMind AI
+
+An AI-powered document analyzer that lets you upload PDFs and DOCX files to get instant summaries, generate practice tests, and create presentations — built with Next.js, OpenAI, and MongoDB.
+
+## Features
+
+- **Document Analysis** — Upload PDF or DOCX files and get an AI-generated summary
+- **Test Generation** — Generate multiple-choice or open-ended practice tests from your document
+- **Presentation Generation** — Auto-generate a PowerPoint presentation from your document
+- **Download** — Export tests as PDF/DOCX and presentations as PPTX
+- **Authentication** — Google OAuth via NextAuth.js
+- **Credit System** — Each action (analyze, test, presentation) costs 1 credit
+- **Payments** — Buy credit packs via PayMongo (one-time purchase, no subscription)
+
+## Tech Stack
+
+- **Framework** — Next.js (App Router), TypeScript, Tailwind CSS v4
+- **AI** — OpenAI GPT-4o mini
+- **Storage** — AWS S3 (file uploads)
+- **Database** — MongoDB Atlas + Mongoose
+- **Auth** — NextAuth.js v4 (Google OAuth, JWT sessions, custom MongoDB adapter)
+- **Payments** — PayMongo (checkout sessions + webhooks)
+- **File generation** — pptxgenjs, pdfkit, mammoth, docx
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Set up environment variables
+
+Create a `.env` file in the root with the following:
+
+```env
+# OpenAI
+OPENAI_API_KEY=
+
+# AWS S3
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_REGION=
+S3_BUCKET_NAME=
+
+# NextAuth
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# MongoDB
+MONGODB_URI=
+MONGODB_DB_NAME=
+
+# PayMongo
+PAYMONGO_SECRET_KEY=sk_test_...
+PAYMONGO_PUBLIC_KEY=pk_test_...
+PAYMONGO_WEBHOOK_SECRET=whsk_...
+```
+
+### 3. Run the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Set up PayMongo webhooks (local)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Install the PayMongo CLI and forward webhooks to your local server:
 
-## Learn More
+```bash
+paymongo listen --forward-to localhost:3000/api/webhooks/paymongo
+```
 
-To learn more about Next.js, take a look at the following resources:
+Copy the webhook secret printed by the CLI into `PAYMONGO_WEBHOOK_SECRET`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Database
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Uses MongoDB Atlas with two separate databases — one for development and one for production. Set `MONGODB_DB_NAME` to the appropriate database name in each environment.
 
-## Deploy on Vercel
+### Collections
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Collection             | Description                                |
+| ---------------------- | ------------------------------------------ |
+| `users`                | User accounts (name, email, credits, plan) |
+| `accounts`             | OAuth provider links (Google)              |
+| `purchases`            | Credit purchase history                    |
+| `verification_tokens`  | Email verification tokens (NextAuth)       |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Credit Packs
+
+| Pack    | Credits | Price     |
+| ------- | ------- | --------- |
+| Starter | 5       | $3 (₱150) |
+| Pro     | 20      | $9 (₱450) |
+
+Prices displayed in USD, processed in PHP via PayMongo.
+
+## Deployment
+
+Set all environment variables in your hosting platform (e.g. Vercel), replacing dev values with production ones:
+
+```env
+NEXTAUTH_URL=https://yourdomain.com
+MONGODB_DB_NAME=your_prod_db_name
+PAYMONGO_SECRET_KEY=sk_live_...
+PAYMONGO_PUBLIC_KEY=pk_live_...
+PAYMONGO_WEBHOOK_SECRET=whsk_...
+```
+
+Add a PayMongo webhook in the dashboard pointing to:
+
+```
+https://yourdomain.com/api/webhooks/paymongo
+```
+
+Event: `checkout_session.payment.paid`
