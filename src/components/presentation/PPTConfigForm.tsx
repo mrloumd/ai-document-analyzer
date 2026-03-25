@@ -1,14 +1,41 @@
 "use client";
 
 import { useState } from "react";
-import type { PPTConfig } from "@/types";
+import type { PPTConfig, PPTTemplate } from "@/types";
 
 interface PPTConfigFormProps {
   isEnabled: boolean;
   isGenerating: boolean;
   error: string | null;
   onGenerate: (config: PPTConfig) => void;
+  plan?: "free" | "paid" | "unpaid";
 }
+
+const TEMPLATES: {
+  value: PPTTemplate;
+  label: string;
+  description: string;
+  preview: { bg: string; strip: string; accent: string };
+}[] = [
+  {
+    value: "default",
+    label: "Default - Dark",
+    description: "Dark teal — always free",
+    preview: { bg: "#040e0e", strip: "#040e0e", accent: "#1E9AA0" },
+  },
+  {
+    value: "light",
+    label: "Light",
+    description: "Clean white, teal accents",
+    preview: { bg: "#f0fdfa", strip: "#0d9488", accent: "#0d9488" },
+  },
+  {
+    value: "dark",
+    label: "Classic",
+    description: "Black & white, print-ready",
+    preview: { bg: "#ffffff", strip: "#1a1a1a", accent: "#1a1a1a" },
+  },
+];
 
 const TONES: {
   value: PPTConfig["tone"];
@@ -42,18 +69,22 @@ export default function PPTConfigForm({
   isGenerating,
   error,
   onGenerate,
+  plan = "free",
 }: PPTConfigFormProps) {
-  const [numSlides, setNumSlides] = useState<string>("8");
+  const isFree = plan === "free";
+  const maxSlides = isFree ? 5 : 20;
+  const [numSlides, setNumSlides] = useState<string>(isFree ? "5" : "8");
   const [tone, setTone] = useState<PPTConfig["tone"]>("formal");
+  const [template, setTemplate] = useState<PPTTemplate>("default");
 
   const n = toInt(numSlides);
-  const isValidSlides = Number.isInteger(n) && n >= 3 && n <= 20;
+  const isValidSlides = Number.isInteger(n) && n >= 3 && n <= maxSlides;
   const canSubmit = isEnabled && !isGenerating && isValidSlides;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
-    onGenerate({ numSlides: n, tone });
+    onGenerate({ numSlides: n, tone, template });
   };
 
   const statusColor =
@@ -124,25 +155,25 @@ export default function PPTConfigForm({
           <label className="block text-sm font-medium text-slate-300 mb-3">
             Number of slides
             <span className="ml-2 text-xs text-slate-500 font-normal">
-              (3–20)
+              (3–{maxSlides})
             </span>
           </label>
           <div className="flex items-center gap-4">
             <input
               type="number"
               min={3}
-              max={20}
+              max={maxSlides}
               value={numSlides}
               onChange={(e) => {
                 const v = e.target.value;
-                if (v === "" || (/^\d+$/.test(v) && parseInt(v) <= 20))
+                if (v === "" || (/^\d+$/.test(v) && parseInt(v) <= maxSlides))
                   setNumSlides(v);
               }}
               disabled={isGenerating}
               className="w-24 bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-white text-sm text-center focus:outline-none focus:border-brand/50 focus:bg-white/[0.06] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <div className="flex gap-2">
-              {[5, 8, 10, 15].map((n) => (
+              {(isFree ? [3, 4, 5] : [5, 8, 10, 15]).map((n) => (
                 <button
                   key={n}
                   type="button"
@@ -155,6 +186,18 @@ export default function PPTConfigForm({
               ))}
             </div>
           </div>
+          {isFree && (
+            <p className="text-xs text-amber-400/80 mt-2">
+              Free accounts: up to 5 slides.{" "}
+              <a
+                href="/upgrade"
+                className="underline underline-offset-2 hover:text-amber-300 transition-colors"
+                suppressHydrationWarning
+              >
+                Top up to unlock more
+              </a>
+            </p>
+          )}
         </div>
 
         {/* Tone selector */}
@@ -184,6 +227,85 @@ export default function PPTConfigForm({
                 </span>
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Template selector */}
+        <div>
+          <label className="block text-sm font-medium text-slate-300 mb-3">
+            Slide template
+            {isFree && (
+              <span className="ml-2 text-xs text-slate-500 font-normal">
+                Light &amp; Dark require credits
+              </span>
+            )}
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {TEMPLATES.map(({ value, label, description, preview }) => {
+              const locked = isFree && value !== "default";
+              return (
+                <div
+                  key={value}
+                  onClick={locked ? undefined : () => setTemplate(value)}
+                  className={[
+                    "relative flex flex-col gap-2 p-3 rounded-xl border text-left transition-all duration-150",
+                    locked
+                      ? "cursor-not-allowed opacity-50 border-white/8 bg-white/[0.02]"
+                      : template === value
+                        ? "cursor-pointer bg-brand/15 border-brand/40"
+                        : "cursor-pointer bg-white/[0.02] border-white/8 hover:border-white/15",
+                  ].join(" ")}
+                >
+                  {/* Mini slide preview */}
+                  <div
+                    className="w-full h-8 rounded-md overflow-hidden shrink-0"
+                    style={{ background: preview.bg }}
+                  >
+                    <div
+                      className="h-2.5 w-full flex items-center px-1.5"
+                      style={{ background: preview.strip }}
+                    >
+                      <div
+                        className="h-1 w-4 rounded-sm"
+                        style={{ background: preview.accent }}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <p
+                      className={[
+                        "text-xs font-semibold leading-none mb-0.5",
+                        locked
+                          ? "text-slate-500"
+                          : template === value
+                            ? "text-white"
+                            : "text-slate-300",
+                      ].join(" ")}
+                    >
+                      {label}
+                      {locked && (
+                        <svg
+                          className="inline-block ml-1 w-3 h-3 text-slate-500"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                          />
+                        </svg>
+                      )}
+                    </p>
+                    <p className="text-[10px] text-slate-500 leading-tight">
+                      {locked ? "Available for purchased credits" : description}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 

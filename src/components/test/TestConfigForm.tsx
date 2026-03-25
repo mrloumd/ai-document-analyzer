@@ -9,6 +9,7 @@ interface TestConfigFormProps {
   isGenerating: boolean;
   error: string | null;
   onGenerate: (config: TestConfig) => void;
+  plan?: "free" | "paid" | "unpaid";
 }
 
 interface FormValues {
@@ -44,7 +45,10 @@ export default function TestConfigForm({
   isGenerating,
   error,
   onGenerate,
+  plan = "free",
 }: TestConfigFormProps) {
+  const isFree = plan === "free";
+  const maxTotal = isFree ? 10 : 9999;
   const [values, setValues] = useState<FormValues>(INITIAL);
 
   const total = toInt(values.total);
@@ -70,10 +74,17 @@ export default function TestConfigForm({
       const raw = e.target.value;
       // Allow empty, but prevent negatives and non-numeric
       if (raw === "" || /^\d+$/.test(raw)) {
+        if (key === "total" && raw !== "") {
+          const n = parseInt(raw, 10);
+          if (!isNaN(n) && n > maxTotal) {
+            setValues((prev) => ({ ...prev, total: String(maxTotal) }));
+            return;
+          }
+        }
         setValues((prev) => ({ ...prev, [key]: raw }));
       }
     },
-    [],
+    [maxTotal],
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -140,6 +151,20 @@ export default function TestConfigForm({
             aria-label="Total questions"
           />
         </div>
+
+        {/* Free-tier cap note */}
+        {isFree && (
+          <p className="text-xs text-amber-400/80 px-1 -mt-2">
+            Free accounts: up to 10 questions.{" "}
+            <a
+              href="/upgrade"
+              className="underline underline-offset-2 hover:text-amber-300 transition-colors"
+              suppressHydrationWarning
+            >
+              Top up to unlock more
+            </a>
+          </p>
+        )}
 
         {/* Question Types */}
         <div className="space-y-2">

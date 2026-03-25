@@ -29,7 +29,7 @@ export async function POST(request: Request) {
         .trim()
         .replace(/\s+/g, "_") || "presentation";
 
-    const buffer = await buildPptx(presentation);
+    const buffer = await buildPptx(presentation, presentation.template ?? "default");
 
     return new Response(new Uint8Array(buffer), {
       headers: {

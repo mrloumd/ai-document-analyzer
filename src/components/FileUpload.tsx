@@ -294,7 +294,7 @@ export default function FileUpload({
 
         {status === "analyzing" && (
           <p className="mt-4 text-xs text-slate-500 text-center">
-            OpenAI is reading your document and extracting insights…
+            We're reading your document and extracting insights…
           </p>
         )}
       </div>

@@ -105,9 +105,12 @@ export interface AppState {
 
 // -- Presentation Generator types --
 
+export type PPTTemplate = "default" | "light" | "dark";
+
 export interface PPTConfig {
   numSlides: number;
   tone: "formal" | "simple" | "academic";
+  template: PPTTemplate;
 }
 
 export interface GeneratedSlide {
@@ -120,4 +123,5 @@ export interface GeneratedPresentation {
   title: string;
   slides: GeneratedSlide[];
   generatedAt: string;
+  template?: PPTTemplate;
 }

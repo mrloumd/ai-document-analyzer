@@ -1,8 +1,11 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import FileUpload from "@/components/FileUpload";
 import ResultDisplay from "@/components/summary/ResultDisplay";
 import TestConfigForm from "@/components/test/TestConfigForm";
@@ -20,6 +23,16 @@ import type {
   TestConfig,
   UploadStatus,
 } from "@/types";
+
+// -- Custom error with API code --
+
+class ApiError extends Error {
+  code?: string;
+  constructor(message: string, code?: string) {
+    super(message);
+    this.code = code;
+  }
+}
 
 // -- State --
 
@@ -105,7 +118,8 @@ async function analyzeText(text: string): Promise<AnalysisResult> {
     body: JSON.stringify({ text }),
   });
   const data = await res.json();
-  if (!res.ok || data.error) throw new Error(data.error ?? "Analysis failed.");
+  if (!res.ok || data.error)
+    throw new ApiError(data.error ?? "Analysis failed.", data.code);
   return data as AnalysisResult;
 }
 
@@ -120,7 +134,7 @@ async function generateTestFromText(
   });
   const data = await res.json();
   if (!res.ok || data.error)
-    throw new Error(data.error ?? "Test generation failed.");
+    throw new ApiError(data.error ?? "Test generation failed.", data.code);
   return data as GeneratedTest;
 }
 
@@ -135,7 +149,10 @@ async function generatePresentationFromText(
   });
   const data = await res.json();
   if (!res.ok || data.error)
-    throw new Error(data.error ?? "Presentation generation failed.");
+    throw new ApiError(
+      data.error ?? "Presentation generation failed.",
+      data.code,
+    );
   return data as GeneratedPresentation;
 }
 
@@ -235,16 +252,25 @@ function ModeToggle({
 // -- Page --
 
 export default function AnalyzePage() {
+  const {
+    data: session,
+    status: authStatus,
+    update: updateSession,
+  } = useSession();
+  const router = useRouter();
   const [state, setState] = useState<AppState>(INITIAL_STATE);
+  const [upgradeRequired, setUpgradeRequired] = useState(false);
 
   const update = useCallback(
     (patch: Partial<AppState>) => setState((prev) => ({ ...prev, ...patch })),
     [],
   );
 
-  // Keep mode in a ref so long-running async handlers always read the latest value
   const modeRef = useRef<AppMode>("summary");
   modeRef.current = state.mode;
+
+  const credits = session?.user?.credits ?? 0;
+  const isAuthenticated = authStatus === "authenticated";
 
   // -- Mode change --
   const handleModeChange = useCallback((newMode: AppMode) => {
@@ -270,6 +296,12 @@ export default function AnalyzePage() {
   // -- File accepted --
   const handleFileAccepted = useCallback(
     async (file: File) => {
+      // Redirect to sign-in if not authenticated
+      if (!isAuthenticated) {
+        router.push("/auth/signin");
+        return;
+      }
+
       setState((prev) => ({
         ...prev,
         status: "uploading",
@@ -282,6 +314,7 @@ export default function AnalyzePage() {
         presentationResult: null,
         error: null,
       }));
+      setUpgradeRequired(false);
 
       try {
         const { extractedText, fileName } = await uploadFile(file, (pct) =>
@@ -295,10 +328,22 @@ export default function AnalyzePage() {
             extractedText,
             fileName,
           });
-          const result = await analyzeText(extractedText);
-          update({ status: "done", result });
+          try {
+            const result = await analyzeText(extractedText);
+            update({ status: "done", result });
+            await updateSession();
+          } catch (err) {
+            if (err instanceof ApiError && err.code === "NO_CREDITS") {
+              setUpgradeRequired(true);
+              update({ status: "idle" });
+            } else {
+              update({
+                status: "error",
+                error: err instanceof Error ? err.message : "Analysis failed.",
+              });
+            }
+          }
         } else {
-          // test and presentation modes: wait for config
           update({
             status: "extracted",
             uploadProgress: 100,
@@ -313,12 +358,13 @@ export default function AnalyzePage() {
         });
       }
     },
-    [update],
+    [isAuthenticated, router, update, updateSession],
   );
 
   // -- Reset (keep mode) --
   const handleReset = useCallback(() => {
     setState((prev) => ({ ...INITIAL_STATE, mode: prev.mode }));
+    setUpgradeRequired(false);
   }, []);
 
   // -- Generate test --
@@ -332,15 +378,24 @@ export default function AnalyzePage() {
       try {
         const testResult = await generateTestFromText(text, config);
         update({ status: "done", testResult });
+        await updateSession();
       } catch (err) {
-        // Stay on "extracted" so the config form stays visible
-        update({
-          status: "extracted",
-          error: err instanceof Error ? err.message : "Test generation failed.",
-        });
+        if (
+          err instanceof ApiError &&
+          (err.code === "NO_CREDITS" || err.code === "UPGRADE_REQUIRED")
+        ) {
+          setUpgradeRequired(true);
+          update({ status: "extracted", error: null });
+        } else {
+          update({
+            status: "extracted",
+            error:
+              err instanceof Error ? err.message : "Test generation failed.",
+          });
+        }
       }
     },
-    [state.extractedText, update],
+    [state.extractedText, update, updateSession],
   );
 
   // -- Generate presentation --
@@ -357,18 +412,26 @@ export default function AnalyzePage() {
           config,
         );
         update({ status: "done", presentationResult });
+        await updateSession();
       } catch (err) {
-        // Stay on "extracted" so the config form stays visible
-        update({
-          status: "extracted",
-          error:
-            err instanceof Error
-              ? err.message
-              : "Presentation generation failed.",
-        });
+        if (
+          err instanceof ApiError &&
+          (err.code === "NO_CREDITS" || err.code === "UPGRADE_REQUIRED")
+        ) {
+          setUpgradeRequired(true);
+          update({ status: "extracted", error: null });
+        } else {
+          update({
+            status: "extracted",
+            error:
+              err instanceof Error
+                ? err.message
+                : "Presentation generation failed.",
+          });
+        }
       }
     },
-    [state.extractedText, update],
+    [state.extractedText, update, updateSession],
   );
 
   // -- Derived --
@@ -432,17 +495,73 @@ export default function AnalyzePage() {
                       : "Upload your document and generate a PowerPoint presentation."}
                 </p>
               </div>
-              <ModeToggle
-                mode={mode}
-                onChange={handleModeChange}
-                disabled={isBusy}
-              />
+              <div className="flex flex-col items-end gap-2">
+                {isAuthenticated && (
+                  <span
+                    className={`text-xs font-medium ${credits > 0 ? "text-slate-400" : "text-rose-400"}`}
+                  >
+                    {credits} credit{credits !== 1 ? "s" : ""} left
+                  </span>
+                )}
+                <ModeToggle
+                  mode={mode}
+                  onChange={handleModeChange}
+                  disabled={isBusy}
+                />
+              </div>
             </div>
           </div>
         </section>
 
         {/* -- Content -- */}
         <section className="mx-auto max-w-3xl px-6 py-10 space-y-6">
+          {/* No credits banner */}
+          {isAuthenticated && (credits === 0 || upgradeRequired) && (
+            <div className="rounded-2xl border border-amber-500/25 bg-amber-500/8 px-5 py-4 flex items-start gap-3">
+              <svg
+                className="w-5 h-5 text-amber-400 shrink-0 mt-0.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+                />
+              </svg>
+              <div>
+                <p className="text-amber-400 font-semibold text-sm">
+                  Out of credits
+                </p>
+                <p className="text-slate-400 text-xs mt-0.5">
+                  You&apos;ve used all your credits.
+                </p>
+                <Link
+                  href="/upgrade"
+                  className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand/15 border border-brand/25 text-brand-light text-xs font-medium hover:bg-brand/25 transition-colors"
+                  suppressHydrationWarning
+                >
+                  Top up
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          )}
+
           {/* Upload card */}
           <div className="rounded-3xl border border-white/8 bg-white/[0.015] p-6 md:p-8 shadow-2xl shadow-black/40">
             <div className="flex items-center gap-3 mb-6">
@@ -489,6 +608,7 @@ export default function AnalyzePage() {
               isGenerating={status === "generating"}
               error={status === "extracted" ? error : null}
               onGenerate={handleGenerateTest}
+              plan={session?.user?.plan ?? "free"}
             />
           )}
 
@@ -499,6 +619,7 @@ export default function AnalyzePage() {
               isGenerating={status === "generating"}
               error={status === "extracted" ? error : null}
               onGenerate={handleGeneratePresentation}
+              plan={session?.user?.plan ?? "free"}
             />
           )}
 
@@ -534,8 +655,8 @@ export default function AnalyzePage() {
                 </p>
                 <p className="text-slate-400 text-sm mt-1">
                   {mode === "presentation"
-                    ? "Creating your slide outline from your document. This may take up to 30 seconds."
-                    : "Crafting questions from your document. This may take up to 30 seconds."}
+                    ? "Creating your slide outline from your document. Usually faster than 30 sec — larger files may take longer."
+                    : "Crafting questions from your document. Usually faster than 30 sec — larger files may take longer."}
                 </p>
               </div>
               <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
@@ -564,19 +685,58 @@ export default function AnalyzePage() {
                 fileName={fileName}
               />
             )}
+
+          {/* Sign-in prompt for guests */}
+          {authStatus === "unauthenticated" && (
+            <div className="rounded-2xl border border-brand/25 bg-brand/8 px-5 py-4 flex items-start gap-3">
+              <svg
+                className="w-5 h-5 text-brand-light shrink-0 mt-0.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              <div>
+                <p className="text-brand-light font-semibold text-sm">
+                  Sign up to get started
+                </p>
+                <p className="text-slate-400 text-xs mt-0.5">
+                  Create a free account and get 3 credits — enough to try
+                  summaries, tests, and presentations.
+                </p>
+                <Link
+                  href="/auth/signin"
+                  className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand/20 border border-brand/30 text-brand-light text-xs font-medium hover:bg-brand/30 transition-colors"
+                  suppressHydrationWarning
+                >
+                  Sign up free
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          )}
         </section>
       </main>
 
-      {/* -- Footer -- */}
-      <footer className="border-t border-white/5 py-8 px-6">
-        <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
-          <span className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand" />
-            StudyMind AI
-          </span>
-          <span>Built with Next.js &amp; TypeScript</span>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }
