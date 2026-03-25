@@ -20,6 +20,7 @@ const PurchaseSchema = new Schema(
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
-const Purchase =
-  mongoose.models.Purchase ?? mongoose.model("Purchase", PurchaseSchema);
+// Delete cached model so hot-reload in dev always uses the current schema
+delete (mongoose.models as Record<string, unknown>)["Purchase"];
+const Purchase = mongoose.model("Purchase", PurchaseSchema);
 export default Purchase;

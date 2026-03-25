@@ -1,20 +1,59 @@
-import type { GeneratedPresentation } from "@/types";
+import type { GeneratedPresentation, PPTTemplate } from "@/types";
 
-// Brand colors — pptxgenjs uses hex WITHOUT the # prefix
-const C = {
-  bg: "040e0e",
-  bgSlide: "071212",
-  brand: "1E9AA0",
-  brandDark: "167a7f",
-  brandLight: "27b5bc",
-  white: "f1f5f9",
-  muted: "94a3b8",
-  black: "000000",
+// Color palettes — pptxgenjs uses hex WITHOUT the # prefix
+type Palette = {
+  bg: string;         // title slide bg
+  bgSlide: string;    // content slide background
+  titleStrip: string; // title strip bg on content slides (always dark/colored for white text contrast)
+  brand: string;
+  brandDark: string;
+  brandLight: string;
+  text: string;       // body / bullet text (changes per theme)
+  muted: string;
 };
+
+const PALETTES: Record<PPTTemplate, Palette> = {
+  default: {
+    bg: "040e0e",
+    bgSlide: "071212",
+    titleStrip: "040e0e",
+    brand: "1E9AA0",
+    brandDark: "167a7f",
+    brandLight: "27b5bc",
+    text: "f1f5f9",
+    muted: "94a3b8",
+  },
+  light: {
+    bg: "f0fdfa",
+    bgSlide: "ffffff",
+    titleStrip: "0d9488",
+    brand: "0d9488",
+    brandDark: "0f766e",
+    brandLight: "14b8a6",
+    text: "0f172a",
+    muted: "475569",
+  },
+  dark: {
+    bg: "0f172a",
+    bgSlide: "1e293b",
+    titleStrip: "0f172a",
+    brand: "6366f1",
+    brandDark: "4f46e5",
+    brandLight: "818cf8",
+    text: "e2e8f0",
+    muted: "94a3b8",
+  },
+};
+
+// Text on titleStrip and top accent bars is always light (strips are always dark/colored)
+const TITLE_TEXT = "f1f5f9";
 
 export async function buildPptx(
   presentation: GeneratedPresentation,
+  template: PPTTemplate = "default",
 ): Promise<Buffer> {
+  const p = PALETTES[template] ?? PALETTES.default;
+
   const PptxGenJS = (await import("pptxgenjs")).default;
   const pptx = new PptxGenJS();
 
@@ -24,7 +63,7 @@ export async function buildPptx(
 
   // -- Title slide --
   const titleSlide = pptx.addSlide();
-  titleSlide.background = { color: C.bg };
+  titleSlide.background = { color: p.bg };
 
   // Glow backdrop behind title text
   titleSlide.addShape(pptx.ShapeType.rect, {
@@ -32,8 +71,8 @@ export async function buildPptx(
     y: 2.3,
     w: 12.33,
     h: 3.0,
-    fill: { color: C.brand, transparency: 88 },
-    line: { color: C.brand, transparency: 60, width: 1 },
+    fill: { color: p.brand, transparency: 88 },
+    line: { color: p.brand, transparency: 60, width: 1 },
   });
 
   // Top accent bar
@@ -42,8 +81,8 @@ export async function buildPptx(
     y: 0,
     w: "100%",
     h: 0.06,
-    fill: { color: C.brand },
-    line: { color: C.brand, width: 0 },
+    fill: { color: p.brand },
+    line: { color: p.brand, width: 0 },
   });
 
   // Brand dot + label (top-left)
@@ -54,7 +93,7 @@ export async function buildPptx(
     h: 0.28,
     fontSize: 9,
     bold: true,
-    color: C.brandLight,
+    color: p.brandLight,
   });
 
   // Main title
@@ -65,7 +104,7 @@ export async function buildPptx(
     h: 1.4,
     fontSize: 34,
     bold: true,
-    color: C.white,
+    color: p.text,
     align: "center",
     wrap: true,
     valign: "middle",
@@ -78,7 +117,7 @@ export async function buildPptx(
     w: 11.73,
     h: 0.45,
     fontSize: 14,
-    color: C.brandLight,
+    color: p.brandLight,
     align: "center",
   });
 
@@ -97,7 +136,7 @@ export async function buildPptx(
     w: 11.73,
     h: 0.3,
     fontSize: 10,
-    color: C.muted,
+    color: p.muted,
     align: "center",
   });
 
@@ -108,7 +147,7 @@ export async function buildPptx(
     w: 11.73,
     h: 0.28,
     fontSize: 9,
-    color: C.muted,
+    color: p.muted,
     align: "center",
   });
 
@@ -118,14 +157,14 @@ export async function buildPptx(
     y: 7.1,
     w: "100%",
     h: 0.05,
-    fill: { color: C.brand },
-    line: { color: C.brand, width: 0 },
+    fill: { color: p.brand },
+    line: { color: p.brand, width: 0 },
   });
 
   // -- Content slides --
   for (const slide of presentation.slides) {
     const s = pptx.addSlide();
-    s.background = { color: C.bgSlide };
+    s.background = { color: p.bgSlide };
 
     // Title area background strip
     s.addShape(pptx.ShapeType.rect, {
@@ -133,8 +172,8 @@ export async function buildPptx(
       y: 0,
       w: "100%",
       h: 1.28,
-      fill: { color: C.bg },
-      line: { color: C.black, width: 0 },
+      fill: { color: p.titleStrip },
+      line: { color: p.titleStrip, width: 0 },
     });
 
     // Left brand accent bar
@@ -143,8 +182,8 @@ export async function buildPptx(
       y: 0.18,
       w: 0.055,
       h: 0.88,
-      fill: { color: C.brand },
-      line: { color: C.brand, width: 0 },
+      fill: { color: p.brand },
+      line: { color: p.brand, width: 0 },
     });
 
     // Slide title
@@ -155,7 +194,7 @@ export async function buildPptx(
       h: 0.9,
       fontSize: 22,
       bold: true,
-      color: C.white,
+      color: TITLE_TEXT,
       valign: "middle",
       wrap: true,
     });
@@ -167,8 +206,8 @@ export async function buildPptx(
       w: 0.72,
       h: 0.38,
       rectRadius: 0.05,
-      fill: { color: C.brand, transparency: 75 },
-      line: { color: C.brand, transparency: 40, width: 1 },
+      fill: { color: p.brand, transparency: 75 },
+      line: { color: p.brand, transparency: 40, width: 1 },
     });
     s.addText(`${slide.slideNumber}`, {
       x: 12.35,
@@ -177,7 +216,7 @@ export async function buildPptx(
       h: 0.38,
       fontSize: 11,
       bold: true,
-      color: C.brandLight,
+      color: p.brandLight,
       align: "center",
       valign: "middle",
     });
@@ -188,16 +227,16 @@ export async function buildPptx(
       y: 1.28,
       w: 12.63,
       h: 0,
-      line: { color: C.brandDark, width: 1, transparency: 20 },
+      line: { color: p.brandDark, width: 1, transparency: 20 },
     });
 
     // Bullet points
     const bulletItems = slide.bullets.map((bullet) => ({
       text: `  ${bullet}`,
       options: {
-        bullet: { characterCode: "25B8", color: C.brand },
+        bullet: { characterCode: "25B8", color: p.brand },
         fontSize: 15,
-        color: C.white,
+        color: p.text,
         paraSpaceBefore: 8,
         paraSpaceAfter: 8,
       },
@@ -218,8 +257,8 @@ export async function buildPptx(
       y: 7.1,
       w: "100%",
       h: 0.05,
-      fill: { color: C.brandDark, transparency: 40 },
-      line: { color: C.brandDark, width: 0 },
+      fill: { color: p.brandDark, transparency: 40 },
+      line: { color: p.brandDark, width: 0 },
     });
 
     // Footer label
@@ -229,7 +268,7 @@ export async function buildPptx(
       w: 1.85,
       h: 0.28,
       fontSize: 7,
-      color: C.muted,
+      color: p.muted,
       align: "right",
     });
   }

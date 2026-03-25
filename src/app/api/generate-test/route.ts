@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
 
-export const POST = withAuth(async (req) => {
+export const POST = withAuth(async (req, _userId, plan) => {
   const body = await req.json();
   const text: string = body?.text ?? "";
   const config: TestConfig | undefined = body?.config;
@@ -50,6 +50,16 @@ export const POST = withAuth(async (req) => {
     return Response.json(
       { error: `Question counts (${sum}) do not match the total (${total}).` },
       { status: 400 },
+    );
+  }
+
+  if (plan === "free" && total > 10) {
+    return Response.json(
+      {
+        error: "Free accounts are limited to 10 questions. Top up to generate more.",
+        code: "UPGRADE_REQUIRED",
+      },
+      { status: 403 },
     );
   }
 

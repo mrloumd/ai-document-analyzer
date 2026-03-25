@@ -9,7 +9,7 @@ const UserSchema = new Schema(
     image: { type: String },
     // Custom fields
     credits: { type: Number, default: 3 },
-    plan: { type: String, enum: ["free", "pro"], default: "free" },
+    plan: { type: String, enum: ["free", "paid", "unpaid"], default: "free" },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );

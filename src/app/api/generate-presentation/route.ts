@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
 
-export const POST = withAuth(async (req) => {
+export const POST = withAuth(async (req, _userId, plan) => {
   const body = await req.json();
   const text: string = body?.text ?? "";
   const config: PPTConfig | undefined = body?.config;
@@ -24,7 +24,7 @@ export const POST = withAuth(async (req) => {
     );
   }
 
-  const { numSlides, tone } = config;
+  const { numSlides, tone, template } = config;
 
   if (!Number.isInteger(numSlides) || numSlides < 3 || numSlides > 20) {
     return Response.json(
@@ -38,7 +38,28 @@ export const POST = withAuth(async (req) => {
       { status: 400 },
     );
   }
+  if (!["default", "light", "dark"].includes(template ?? "default")) {
+    return Response.json({ error: "Invalid template." }, { status: 400 });
+  }
+  if (plan === "free" && numSlides > 5) {
+    return Response.json(
+      {
+        error: "Free accounts are limited to 5 slides. Top up to generate more.",
+        code: "UPGRADE_REQUIRED",
+      },
+      { status: 403 },
+    );
+  }
+  if (plan === "free" && template && template !== "default") {
+    return Response.json(
+      {
+        error: "Templates are a paid feature. Top up to unlock.",
+        code: "UPGRADE_REQUIRED",
+      },
+      { status: 403 },
+    );
+  }
 
   const presentation = await generatePresentation(text, config);
-  return Response.json(presentation);
+  return Response.json({ ...presentation, template: template ?? "default" });
 });

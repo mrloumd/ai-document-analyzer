@@ -15,7 +15,7 @@ function toObjectId(id: string): ObjectId {
 
 function userFromDoc(
   doc: Record<string, unknown>,
-): AdapterUser & { credits: number; plan: "free" | "pro" } {
+): AdapterUser & { credits: number; plan: "free" | "paid" | "unpaid" } {
   return {
     id: (doc._id as ObjectId).toString(),
     name: (doc.name as string) ?? null,
@@ -23,7 +23,7 @@ function userFromDoc(
     emailVerified: (doc.email_verified as Date) ?? null,
     image: (doc.image as string) ?? null,
     credits: (doc.credits as number) ?? 0,
-    plan: (doc.plan as "free" | "pro") ?? "free",
+    plan: (doc.plan as "free" | "paid" | "unpaid") ?? "free",
   };
 }
 

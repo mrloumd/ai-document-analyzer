@@ -89,7 +89,10 @@ export async function POST(req: Request) {
     try {
       await connectMongoose();
       await Promise.all([
-        User.findByIdAndUpdate(userId, { $inc: { credits } }),
+        User.findByIdAndUpdate(userId, {
+          $inc: { credits },
+          $set: { plan: "paid" },
+        }),
         Purchase.create({
           user_id: userId,
           pack_id: packId,
@@ -110,6 +113,29 @@ export async function POST(req: Request) {
         { error: "Database update failed." },
         { status: 500 },
       );
+    }
+  }
+
+  if (eventType === "checkout_session.payment.failed") {
+    const checkoutSession = event.data?.attributes?.data;
+    const metadata =
+      checkoutSession?.attributes?.metadata ??
+      checkoutSession?.attributes?.payments?.[0]?.attributes?.metadata ??
+      checkoutSession?.attributes?.payment_intent?.attributes?.metadata;
+    const { userId } = metadata ?? {};
+
+    if (userId) {
+      try {
+        await connectMongoose();
+        await User.findByIdAndUpdate(userId, {
+          $set: { plan: "unpaid" },
+        });
+        console.log(
+          `\x1b[33m[paymongo webhook] Payment failed for user ${userId} — marked unpaid\x1b[0m`,
+        );
+      } catch (err) {
+        console.error("[paymongo webhook] Failed to mark unpaid:", err);
+      }
     }
   }
 

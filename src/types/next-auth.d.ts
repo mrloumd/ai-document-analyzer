@@ -6,12 +6,12 @@ declare module "next-auth" {
     user: {
       id: string;
       credits: number;
-      plan: "free" | "pro";
+      plan: "free" | "paid" | "unpaid";
     } & DefaultSession["user"];
   }
   interface User {
     credits?: number;
-    plan?: "free" | "pro";
+    plan?: "free" | "paid" | "unpaid";
   }
 }
 
@@ -19,6 +19,6 @@ declare module "next-auth/jwt" {
   interface JWT extends DefaultJWT {
     id?: string;
     credits?: number;
-    plan?: "free" | "pro";
+    plan?: "free" | "paid" | "unpaid";
   }
 }

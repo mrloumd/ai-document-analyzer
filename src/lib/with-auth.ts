@@ -3,7 +3,11 @@ import { authOptions } from "./auth";
 import { connectMongoose } from "./mongoose";
 import User from "./models/User";
 
-type AuthedHandler = (req: Request, userId: string) => Promise<Response>;
+type AuthedHandler = (
+  req: Request,
+  userId: string,
+  plan: "free" | "paid" | "unpaid",
+) => Promise<Response>;
 
 /**
  * Wraps a route handler with:
@@ -23,7 +27,7 @@ export function withAuth(handler: AuthedHandler) {
     }
 
     await connectMongoose();
-    const user = await User.findById(session.user.id).select("credits");
+    const user = await User.findById(session.user.id).select("credits plan");
 
     if (!user || user.credits <= 0) {
       return Response.json(
@@ -35,7 +39,11 @@ export function withAuth(handler: AuthedHandler) {
       );
     }
 
-    const response = await handler(req, session.user.id);
+    const response = await handler(
+      req,
+      session.user.id,
+      (user.plan as "free" | "paid" | "unpaid") ?? "free",
+    );
 
     if (response.status >= 200 && response.status < 300) {
       await User.findByIdAndUpdate(session.user.id, { $inc: { credits: -1 } });

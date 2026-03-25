@@ -380,7 +380,10 @@ export default function AnalyzePage() {
         update({ status: "done", testResult });
         await updateSession();
       } catch (err) {
-        if (err instanceof ApiError && err.code === "NO_CREDTS") {
+        if (
+          err instanceof ApiError &&
+          (err.code === "NO_CREDITS" || err.code === "UPGRADE_REQUIRED")
+        ) {
           setUpgradeRequired(true);
           update({ status: "extracted", error: null });
         } else {
@@ -411,7 +414,10 @@ export default function AnalyzePage() {
         update({ status: "done", presentationResult });
         await updateSession();
       } catch (err) {
-        if (err instanceof ApiError && err.code === "NO_CREDTS") {
+        if (
+          err instanceof ApiError &&
+          (err.code === "NO_CREDITS" || err.code === "UPGRADE_REQUIRED")
+        ) {
           setUpgradeRequired(true);
           update({ status: "extracted", error: null });
         } else {
@@ -595,54 +601,6 @@ export default function AnalyzePage() {
             />
           </div>
 
-          {/* Sign-in prompt for guests */}
-          {authStatus === "unauthenticated" && (
-            <div className="rounded-2xl border border-brand/25 bg-brand/8 px-5 py-4 flex items-start gap-3">
-              <svg
-                className="w-5 h-5 text-brand-light shrink-0 mt-0.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-              <div>
-                <p className="text-brand-light font-semibold text-sm">
-                  Sign up to get started
-                </p>
-                <p className="text-slate-400 text-xs mt-0.5">
-                  Create a free account and get 3 credits — enough to try
-                  summaries, tests, and presentations.
-                </p>
-                <Link
-                  href="/auth/signin"
-                  className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand/20 border border-brand/30 text-brand-light text-xs font-medium hover:bg-brand/30 transition-colors"
-                  suppressHydrationWarning
-                >
-                  Sign up free
-                  <svg
-                    className="w-3 h-3"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M13 7l5 5m0 0l-5 5m5-5H6"
-                    />
-                  </svg>
-                </Link>
-              </div>
-            </div>
-          )}
-
           {/* Test config form (test mode, after file extracted) */}
           {mode === "test" && (
             <TestConfigForm
@@ -650,6 +608,7 @@ export default function AnalyzePage() {
               isGenerating={status === "generating"}
               error={status === "extracted" ? error : null}
               onGenerate={handleGenerateTest}
+              plan={session?.user?.plan ?? "free"}
             />
           )}
 
@@ -660,6 +619,7 @@ export default function AnalyzePage() {
               isGenerating={status === "generating"}
               error={status === "extracted" ? error : null}
               onGenerate={handleGeneratePresentation}
+              plan={session?.user?.plan ?? "free"}
             />
           )}
 
@@ -725,6 +685,54 @@ export default function AnalyzePage() {
                 fileName={fileName}
               />
             )}
+
+          {/* Sign-in prompt for guests */}
+          {authStatus === "unauthenticated" && (
+            <div className="rounded-2xl border border-brand/25 bg-brand/8 px-5 py-4 flex items-start gap-3">
+              <svg
+                className="w-5 h-5 text-brand-light shrink-0 mt-0.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              <div>
+                <p className="text-brand-light font-semibold text-sm">
+                  Sign up to get started
+                </p>
+                <p className="text-slate-400 text-xs mt-0.5">
+                  Create a free account and get 3 credits — enough to try
+                  summaries, tests, and presentations.
+                </p>
+                <Link
+                  href="/auth/signin"
+                  className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand/20 border border-brand/30 text-brand-light text-xs font-medium hover:bg-brand/30 transition-colors"
+                  suppressHydrationWarning
+                >
+                  Sign up free
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          )}
         </section>
       </main>
 

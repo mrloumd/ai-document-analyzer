@@ -1,5 +1,6 @@
 import GoogleProvider from "next-auth/providers/google";
 import type { NextAuthOptions } from "next-auth";
+import type { JWT } from "next-auth/jwt";
 import clientPromise from "./mongodb";
 import { connectMongoose } from "./mongoose";
 import User from "./models/User";
@@ -21,7 +22,7 @@ export const authOptions: NextAuthOptions = {
         // Initial sign-in: populate from user object
         token.id = user.id;
         token.credits = (user as { credits?: number }).credits ?? 0;
-        token.plan = (user as { plan?: "free" | "pro" }).plan ?? "free";
+        token.plan = (user as { plan?: "free" | "paid" | "unpaid" }).plan ?? "free";
         return token;
       }
       // Every JWT refresh (including update() calls): re-fetch fresh data from DB
@@ -29,11 +30,11 @@ export const authOptions: NextAuthOptions = {
         await connectMongoose();
         const dbUser = (await User.findById(token.id).lean()) as {
           credits?: number;
-          plan?: "free" | "pro";
+          plan?: "free" | "paid" | "unpaid";
         } | null;
         if (!dbUser) {
           // User deleted from DB — invalidate the session
-          return null;
+          return null as unknown as JWT;
         }
         token.credits = dbUser.credits ?? 0;
         token.plan = dbUser.plan ?? "free";
