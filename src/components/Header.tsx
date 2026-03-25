@@ -234,7 +234,11 @@ export default function Header() {
         {/* Mobile */}
         <div className="md:hidden flex items-center gap-3">
           {status === "authenticated" && session?.user && (
-            <CreditBadge credits={session.user.credits ?? 0} />
+            <UserMenu
+              name={session.user.name ?? "User"}
+              image={session.user.image}
+              credits={session.user.credits ?? 0}
+            />
           )}
           {status === "unauthenticated" && (
             <Link
