@@ -48,7 +48,7 @@ export function CustomMongoDBAdapter(
         email: user.email,
         email_verified: user.emailVerified ?? null,
         image: user.image ?? null,
-        credits: 1,
+        credits: 3,
         plan: "free",
         created_at: now,
         updated_at: now,

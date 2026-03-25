@@ -31,10 +31,12 @@ export const authOptions: NextAuthOptions = {
           credits?: number;
           plan?: "free" | "pro";
         } | null;
-        if (dbUser) {
-          token.credits = dbUser.credits ?? 0;
-          token.plan = dbUser.plan ?? "free";
+        if (!dbUser) {
+          // User deleted from DB — invalidate the session
+          return null;
         }
+        token.credits = dbUser.credits ?? 0;
+        token.plan = dbUser.plan ?? "free";
       }
       return token;
     },

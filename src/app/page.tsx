@@ -1,5 +1,6 @@
-import Link from "next/link";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { HeroButtons, BannerCTA } from "@/components/HeroCTA";
 
 const FEATURES = [
   {
@@ -139,7 +140,7 @@ const STATS = [
 
 const HOW_IT_WORKS = [
   {
-    step: "01",
+    step: "1",
     title: "Upload",
     desc: "Drop your PDF or DOCX into the upload zone. Text is securely extracted from your document.",
     icon: (
@@ -159,7 +160,7 @@ const HOW_IT_WORKS = [
     ),
   },
   {
-    step: "02",
+    step: "2",
     title: "Choose a Mode",
     desc: "Select Summary for instant insights, Generate Test to build an exam, or Presentation to create a slide deck.",
     icon: (
@@ -179,7 +180,7 @@ const HOW_IT_WORKS = [
     ),
   },
   {
-    step: "03",
+    step: "3",
     title: "Generate & Download",
     desc: "Processes your document and delivers a polished output you can download and use immediately.",
     icon: (
@@ -239,35 +240,7 @@ export default function HomePage() {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap items-center justify-center gap-3 mb-14">
-              <Link
-                href="/analyze"
-                className="px-6 py-3 rounded-xl bg-brand hover:bg-brand-light text-white font-semibold text-sm transition-colors flex items-center gap-2"
-                suppressHydrationWarning
-              >
-                Start for Free
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M13 7l5 5m0 0l-5 5m5-5H6"
-                  />
-                </svg>
-              </Link>
-              <a
-                href="#features"
-                className="px-6 py-3 rounded-xl border border-white/10 text-slate-300 hover:text-white hover:border-white/20 font-medium text-sm transition-colors"
-                suppressHydrationWarning
-              >
-                See Features
-              </a>
-            </div>
+            <HeroButtons />
 
             {/* Stats */}
             <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 border-t border-white/5 pt-10">
@@ -586,83 +559,12 @@ export default function HomePage() {
             <h2 className="text-white font-bold text-3xl sm:text-4xl mb-4">
               Ready to work smarter with your documents?
             </h2>
-            <p className="text-slate-400 text-base mb-10 max-w-md mx-auto">
-              Summarize, test, and present — all from a single file upload. No
-              sign-up required.
-            </p>
-
-            {/* 3 mode pills */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
-              {[
-                {
-                  label: "Summary",
-                  icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
-                },
-                {
-                  label: "Generate Test",
-                  icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4",
-                },
-                {
-                  label: "Presentation",
-                  icon: "M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z",
-                },
-              ].map(({ label, icon }) => (
-                <div
-                  key={label}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-brand/25 bg-brand/10 text-brand-light text-xs font-medium"
-                >
-                  <svg
-                    className="w-3.5 h-3.5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d={icon}
-                    />
-                  </svg>
-                  {label}
-                </div>
-              ))}
-            </div>
-
-            <Link
-              href="/analyze"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-brand hover:bg-brand-light text-white font-semibold text-base transition-colors"
-              suppressHydrationWarning
-            >
-              Start for Free
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                />
-              </svg>
-            </Link>
+            <BannerCTA />
           </div>
         </section>
       </main>
 
-      {/* -- Footer -- */}
-      <footer className="border-t border-white/5 py-8 px-6">
-        <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
-          <span className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand" />
-            StudyMind
-          </span>
-          <span>Built with Next.js &amp; TypeScript</span>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }

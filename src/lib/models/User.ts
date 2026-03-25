@@ -8,7 +8,7 @@ const UserSchema = new Schema(
     email_verified: { type: Date },
     image: { type: String },
     // Custom fields
-    credits: { type: Number, default: 1 },
+    credits: { type: Number, default: 3 },
     plan: { type: String, enum: ["free", "pro"], default: "free" },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },

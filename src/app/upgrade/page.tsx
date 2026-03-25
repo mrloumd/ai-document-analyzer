@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 type PackId = "starter" | "pro";
 
@@ -271,15 +272,7 @@ export default function UpgradePage() {
         </section>
       </main>
 
-      <footer className="border-t border-white/5 py-8 px-6">
-        <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
-          <span className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand" />
-            StudyMind
-          </span>
-          <span>Built with Next.js &amp; TypeScript</span>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }

@@ -72,7 +72,7 @@ export default function SignInPage() {
             <p className="text-sm text-slate-300">
               You&apos;ll receive{" "}
               <span className="text-brand-light font-semibold">
-                1 free credit
+                3 free credit
               </span>{" "}
               on signup
             </p>
