@@ -8,6 +8,7 @@ interface FileUploadProps {
   uploadProgress: number;
   onFileAccepted: (file: File) => void;
   onReset: () => void;
+  onCancel?: () => void;
   fileName: string | null;
   fileSize: number | null;
   error: string | null;
@@ -38,6 +39,7 @@ export default function FileUpload({
   uploadProgress,
   onFileAccepted,
   onReset,
+  onCancel,
   fileName,
   fileSize,
   error,
@@ -296,6 +298,18 @@ export default function FileUpload({
           <p className="mt-4 text-xs text-slate-500 text-center">
             We're reading your document and extracting insights…
           </p>
+        )}
+
+        {isUploading && onCancel && (
+          <div className="mt-4 flex justify-center">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="text-xs text-slate-500 hover:text-slate-300 underline underline-offset-2 transition-colors"
+            >
+              Cancel upload
+            </button>
+          </div>
         )}
       </div>
     );

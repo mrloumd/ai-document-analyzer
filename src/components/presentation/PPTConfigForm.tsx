@@ -341,6 +341,14 @@ export default function PPTConfigForm({
           </div>
         )}
 
+        {/* Credit notice */}
+        {isEnabled && (
+          <p className="text-center text-xs text-slate-500">
+            Generating will use{" "}
+            <span className="text-slate-300 font-medium">1 credit</span>
+          </p>
+        )}
+
         {/* Submit */}
         <button
           type="submit"
