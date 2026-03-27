@@ -17,6 +17,7 @@ interface TestResultDisplayProps {
 
 // -- Section container --
 function Section({
+  id,
   roman,
   title,
   directions,
@@ -25,6 +26,7 @@ function Section({
   icon,
   children,
 }: {
+  id?: string;
   roman: string;
   title: string;
   directions: string;
@@ -34,7 +36,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-white/8 bg-white/[0.025] overflow-hidden">
+    <div id={id} className="rounded-2xl border border-white/8 bg-white/[0.025] overflow-hidden">
       {/* Section header */}
       <div
         className={`px-5 py-4 border-b border-white/8 flex items-center justify-between ${color}`}
@@ -245,6 +247,13 @@ export default function TestResultDisplay({
     day: "numeric",
   });
 
+  const navSections = [
+    { id: "section-mc", label: "MC", count: test.multipleChoice.length },
+    { id: "section-fib", label: "FIB", count: test.fillInTheBlanks.length },
+    { id: "section-enum", label: "Enum", count: test.enumeration.length },
+    { id: "section-essay", label: "Essay", count: test.essay.length },
+  ].filter((s) => s.count > 0);
+
   return (
     <section className="w-full animate-[fade-up_0.4s_ease-out] space-y-6">
       {/* Header bar */}
@@ -341,9 +350,26 @@ export default function TestResultDisplay({
         </div>
       )}
 
+      {/* Section quick-nav */}
+      {navSections.length > 1 && (
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-slate-600 text-xs">Jump to:</span>
+          {navSections.map((s) => (
+            <a
+              key={s.id}
+              href={`#${s.id}`}
+              className="px-2.5 py-1 rounded-md text-xs border border-white/10 text-slate-400 hover:text-white hover:border-white/20 transition-colors"
+            >
+              {s.label} <span className="opacity-50">({s.count})</span>
+            </a>
+          ))}
+        </div>
+      )}
+
       {/* I. Multiple Choice */}
       {test.multipleChoice.length > 0 && (
         <Section
+          id="section-mc"
           roman="I"
           title="Multiple Choice"
           directions="Choose the letter of the best answer."
@@ -379,6 +405,7 @@ export default function TestResultDisplay({
       {/* II. Fill in the Blanks */}
       {test.fillInTheBlanks.length > 0 && (
         <Section
+          id="section-fib"
           roman="II"
           title="Fill in the Blanks"
           directions="Write the correct word or phrase on the blank."
@@ -414,6 +441,7 @@ export default function TestResultDisplay({
       {/* III. Enumeration */}
       {test.enumeration.length > 0 && (
         <Section
+          id="section-enum"
           roman="III"
           title="Enumeration"
           directions="List the required items completely and in order."
@@ -449,6 +477,7 @@ export default function TestResultDisplay({
       {/* IV. Essay */}
       {test.essay.length > 0 && (
         <Section
+          id="section-essay"
           roman="IV"
           title="Essay"
           directions="Answer each question with a well-organized essay of at least 3-5 sentences."

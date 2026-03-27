@@ -12,8 +12,16 @@ function CreditBadge({ credits }: { credits: number }) {
         ? "text-amber-400 border-amber-500/30 bg-amber-500/10"
         : "text-rose-400 border-rose-500/30 bg-rose-500/10";
 
+  const tip =
+    credits >= 2
+      ? `${credits} credits — good to go`
+      : credits === 1
+        ? "1 credit left — running low"
+        : "No credits — top up to continue";
+
   return (
     <span
+      title={tip}
       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-xs font-semibold ${color}`}
     >
       <svg

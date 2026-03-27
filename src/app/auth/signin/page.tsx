@@ -1,13 +1,29 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+const AUTH_ERRORS: Record<string, string> = {
+  OAuthAccountNotLinked: "This email is linked to a different sign-in method.",
+  OAuthSignin: "Could not connect to Google. Please try again.",
+  OAuthCallback: "Sign-in failed. Please try again.",
+  OAuthCreateAccount: "Could not create your account. Please try again.",
+  Default: "Something went wrong. Please try again.",
+};
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get("error");
+    if (error) setAuthError(AUTH_ERRORS[error] ?? AUTH_ERRORS.Default);
+  }, []);
 
   async function handleGoogleSignIn() {
     setIsLoading(true);
+    setAuthError(null);
     await signIn("google", { callbackUrl: "/analyze" });
   }
 
@@ -77,6 +93,16 @@ export default function SignInPage() {
               on signup
             </p>
           </div>
+
+          {/* Auth error */}
+          {authError && (
+            <div className="flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 mb-4">
+              <svg className="w-4 h-4 text-red-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-red-300 text-sm">{authError}</p>
+            </div>
+          )}
 
           {/* Google sign-in button */}
           <button

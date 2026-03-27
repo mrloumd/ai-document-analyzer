@@ -258,17 +258,22 @@ export default function PPTConfigForm({
                 >
                   {/* Mini slide preview */}
                   <div
-                    className="w-full h-8 rounded-md overflow-hidden shrink-0"
+                    className="w-full h-14 rounded-md overflow-hidden shrink-0"
                     style={{ background: preview.bg }}
                   >
                     <div
-                      className="h-2.5 w-full flex items-center px-1.5"
+                      className="h-4 w-full flex items-center px-2"
                       style={{ background: preview.strip }}
                     >
                       <div
-                        className="h-1 w-4 rounded-sm"
+                        className="h-1.5 w-10 rounded-sm opacity-90"
                         style={{ background: preview.accent }}
                       />
+                    </div>
+                    <div className="px-2 pt-1.5 space-y-1">
+                      <div className="h-1 w-8 rounded-sm opacity-50" style={{ background: preview.accent }} />
+                      <div className="h-0.5 w-11 rounded-sm opacity-30" style={{ background: preview.accent }} />
+                      <div className="h-0.5 w-7 rounded-sm opacity-30" style={{ background: preview.accent }} />
                     </div>
                   </div>
                   <div>

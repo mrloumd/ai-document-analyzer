@@ -171,10 +171,11 @@ function ModeToggle({
   onChange: (m: AppMode) => void;
   disabled: boolean;
 }) {
-  const MODES: { value: AppMode; label: string; icon: React.ReactNode }[] = [
+  const MODES: { value: AppMode; label: string; title: string; icon: React.ReactNode }[] = [
     {
       value: "summary",
       label: "Summary",
+      title: "Get a bullet-point summary of your document",
       icon: (
         <svg
           className="w-3.5 h-3.5"
@@ -194,6 +195,7 @@ function ModeToggle({
     {
       value: "test",
       label: "Generate Test",
+      title: "Generate a quiz or exam from your document",
       icon: (
         <svg
           className="w-3.5 h-3.5"
@@ -213,6 +215,7 @@ function ModeToggle({
     {
       value: "presentation",
       label: "Presentation",
+      title: "Build a slide deck from your document",
       icon: (
         <svg
           className="w-3.5 h-3.5"
@@ -233,11 +236,12 @@ function ModeToggle({
 
   return (
     <div className="inline-flex items-center p-1 rounded-xl bg-white/[0.04] border border-white/8 gap-1">
-      {MODES.map(({ value, label, icon }) => (
+      {MODES.map(({ value, label, title, icon }) => (
         <button
           key={value}
           onClick={() => !disabled && onChange(value)}
           disabled={disabled}
+          title={title}
           className={[
             "flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150",
             mode === value
