@@ -17,6 +17,7 @@ interface TestResultDisplayProps {
 
 // -- Section container --
 function Section({
+  id,
   roman,
   title,
   directions,
@@ -25,6 +26,7 @@ function Section({
   icon,
   children,
 }: {
+  id?: string;
   roman: string;
   title: string;
   directions: string;
@@ -34,13 +36,13 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-white/8 bg-white/[0.025] overflow-hidden">
+    <div id={id} className="rounded-2xl border border-border bg-surface overflow-hidden">
       {/* Section header */}
       <div
-        className={`px-5 py-4 border-b border-white/8 flex items-center justify-between ${color}`}
+        className={`px-5 py-4 border-b border-border flex items-center justify-between ${color}`}
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-surface-raised flex items-center justify-center shrink-0">
             {icon}
           </div>
           <div>
@@ -84,7 +86,7 @@ function MCQuestion({
     <div className="flex gap-3">
       <QNum n={n} />
       <div className="flex-1">
-        <p className="text-slate-200 text-sm mb-2.5">{q.question}</p>
+        <p className="text-foreground/90 text-sm mb-2.5">{q.question}</p>
         <div className="grid sm:grid-cols-2 gap-1.5">
           {q.options.map((opt, i) => {
             const letter = String.fromCharCode(65 + i);
@@ -96,7 +98,7 @@ function MCQuestion({
                   "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors",
                   isCorrect
                     ? "bg-emerald-500/12 border border-emerald-500/25 text-emerald-300"
-                    : "bg-white/[0.03] border border-white/5 text-slate-400",
+                    : "bg-surface border border-border text-muted",
                 ].join(" ")}
               >
                 <span
@@ -104,7 +106,7 @@ function MCQuestion({
                     "w-5 h-5 rounded text-xs font-bold flex items-center justify-center shrink-0",
                     isCorrect
                       ? "bg-emerald-500/25 text-emerald-300"
-                      : "bg-white/8 text-slate-500",
+                      : "bg-surface-raised text-muted",
                   ].join(" ")}
                 >
                   {letter}
@@ -138,7 +140,7 @@ function FIBQuestion({
     <div className="flex gap-3">
       <QNum n={n} />
       <div className="flex-1">
-        <p className="text-slate-200 text-sm">{q.question}</p>
+        <p className="text-foreground/90 text-sm">{q.question}</p>
         {showAnswer && (
           <p className="mt-1.5 text-xs text-brand-light font-medium">
             Answer:{" "}
@@ -164,17 +166,17 @@ function EnumQuestion({
     <div className="flex gap-3">
       <QNum n={n} />
       <div className="flex-1">
-        <p className="text-slate-200 text-sm mb-2">{q.question}</p>
+        <p className="text-foreground/90 text-sm mb-2">{q.question}</p>
         <div className="space-y-1.5 pl-2">
           {Array.from({ length: q.answers.length }, (_, i) => (
             <div key={i} className="flex items-center gap-2.5">
-              <span className="text-slate-600 text-xs w-4 shrink-0">
+              <span className="text-muted text-xs w-4 shrink-0">
                 {i + 1}.
               </span>
               {showAnswer ? (
                 <span className="text-brand-light text-sm">{q.answers[i]}</span>
               ) : (
-                <div className="h-px flex-1 bg-white/10" />
+                <div className="h-px flex-1 bg-border" />
               )}
             </div>
           ))}
@@ -198,21 +200,21 @@ function EssayQuestion({
     <div className="flex gap-3">
       <QNum n={n} />
       <div className="flex-1">
-        <p className="text-slate-200 text-sm">{q.question}</p>
+        <p className="text-foreground/90 text-sm">{q.question}</p>
         {q.hint && showAnswer && (
-          <p className="mt-1.5 text-xs text-slate-500 italic">
+          <p className="mt-1.5 text-xs text-muted italic">
             Guide: {q.hint}
           </p>
         )}
         {!showAnswer && (
           <div className="mt-3 space-y-1.5">
             {Array.from({ length: 4 }, (_, i) => (
-              <div key={i} className="h-px w-full bg-white/8" />
+              <div key={i} className="h-px w-full bg-border" />
             ))}
           </div>
         )}
         {q.hint && !showAnswer && (
-          <p className="mt-2 text-xs text-slate-600 italic">
+          <p className="mt-2 text-xs text-muted italic">
             (Guide: {q.hint})
           </p>
         )}
@@ -245,10 +247,17 @@ export default function TestResultDisplay({
     day: "numeric",
   });
 
+  const navSections = [
+    { id: "section-mc", label: "MC", count: test.multipleChoice.length },
+    { id: "section-fib", label: "FIB", count: test.fillInTheBlanks.length },
+    { id: "section-enum", label: "Enum", count: test.enumeration.length },
+    { id: "section-essay", label: "Essay", count: test.essay.length },
+  ].filter((s) => s.count > 0);
+
   return (
     <section className="w-full animate-[fade-up_0.4s_ease-out] space-y-6">
       {/* Header bar */}
-      <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-5">
+      <div className="rounded-2xl border border-border bg-surface p-5">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
@@ -257,12 +266,12 @@ export default function TestResultDisplay({
                 Test Generated
               </span>
             </div>
-            <h2 className="text-white font-bold text-xl leading-tight">
+            <h2 className="text-foreground font-bold text-xl leading-tight">
               {test.title}
             </h2>
-            <p className="text-slate-500 text-xs mt-1">
+            <p className="text-muted text-xs mt-1">
               {total} questions &middot; Generated {formattedDate} &middot;{" "}
-              <span className="text-slate-600 truncate">{fileName}</span>
+              <span className="text-muted truncate">{fileName}</span>
             </p>
           </div>
 
@@ -274,7 +283,7 @@ export default function TestResultDisplay({
                 "flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-colors",
                 showAnswerKey
                   ? "bg-amber-500/15 border-amber-500/25 text-amber-300"
-                  : "bg-white/[0.03] border-white/10 text-slate-400 hover:text-white hover:border-white/20",
+                  : "bg-surface border-border text-muted hover:text-foreground hover:border-foreground/20",
               ].join(" ")}
             >
               <svg
@@ -313,7 +322,7 @@ export default function TestResultDisplay({
         </div>
 
         {/* Instructions */}
-        <p className="mt-4 text-slate-400 text-sm leading-relaxed border-t border-white/5 pt-4 italic">
+        <p className="mt-4 text-muted text-sm leading-relaxed border-t border-border pt-4 italic">
           {test.instructions}
         </p>
       </div>
@@ -341,9 +350,26 @@ export default function TestResultDisplay({
         </div>
       )}
 
+      {/* Section quick-nav */}
+      {navSections.length > 1 && (
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-muted text-xs">Jump to:</span>
+          {navSections.map((s) => (
+            <a
+              key={s.id}
+              href={`#${s.id}`}
+              className="px-2.5 py-1 rounded-md text-xs border border-border text-muted hover:text-foreground hover:border-foreground/20 transition-colors"
+            >
+              {s.label} <span className="opacity-50">({s.count})</span>
+            </a>
+          ))}
+        </div>
+      )}
+
       {/* I. Multiple Choice */}
       {test.multipleChoice.length > 0 && (
         <Section
+          id="section-mc"
           roman="I"
           title="Multiple Choice"
           directions="Choose the letter of the best answer."
@@ -379,6 +405,7 @@ export default function TestResultDisplay({
       {/* II. Fill in the Blanks */}
       {test.fillInTheBlanks.length > 0 && (
         <Section
+          id="section-fib"
           roman="II"
           title="Fill in the Blanks"
           directions="Write the correct word or phrase on the blank."
@@ -414,6 +441,7 @@ export default function TestResultDisplay({
       {/* III. Enumeration */}
       {test.enumeration.length > 0 && (
         <Section
+          id="section-enum"
           roman="III"
           title="Enumeration"
           directions="List the required items completely and in order."
@@ -449,6 +477,7 @@ export default function TestResultDisplay({
       {/* IV. Essay */}
       {test.essay.length > 0 && (
         <Section
+          id="section-essay"
           roman="IV"
           title="Essay"
           directions="Answer each question with a well-organized essay of at least 3-5 sentences."

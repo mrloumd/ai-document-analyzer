@@ -39,10 +39,10 @@ export default function UpgradeSuccessPage() {
             </svg>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">
             Payment Successful!
           </h1>
-          <p className="text-slate-400 text-sm mb-8">
+          <p className="text-muted text-sm mb-8">
             Credits are ready. Go analyze something.
           </p>
 
@@ -67,11 +67,11 @@ export default function UpgradeSuccessPage() {
             </svg>
           </Link>
 
-          <p className="text-slate-600 text-xs mt-6">
+          <p className="text-muted text-xs mt-6">
             Credits not showing up?{" "}
             <Link
               href="/upgrade"
-              className="text-slate-400 hover:text-white transition-colors underline underline-offset-2"
+              className="text-muted hover:text-foreground transition-colors underline underline-offset-2"
               suppressHydrationWarning
             >
               Contact support

@@ -171,10 +171,11 @@ function ModeToggle({
   onChange: (m: AppMode) => void;
   disabled: boolean;
 }) {
-  const MODES: { value: AppMode; label: string; icon: React.ReactNode }[] = [
+  const MODES: { value: AppMode; label: string; title: string; icon: React.ReactNode }[] = [
     {
       value: "summary",
       label: "Summary",
+      title: "Get a bullet-point summary of your document",
       icon: (
         <svg
           className="w-3.5 h-3.5"
@@ -194,6 +195,7 @@ function ModeToggle({
     {
       value: "test",
       label: "Generate Test",
+      title: "Generate a quiz or exam from your document",
       icon: (
         <svg
           className="w-3.5 h-3.5"
@@ -213,6 +215,7 @@ function ModeToggle({
     {
       value: "presentation",
       label: "Presentation",
+      title: "Build a slide deck from your document",
       icon: (
         <svg
           className="w-3.5 h-3.5"
@@ -232,17 +235,18 @@ function ModeToggle({
   ];
 
   return (
-    <div className="inline-flex items-center p-1 rounded-xl bg-white/[0.04] border border-white/8 gap-1">
-      {MODES.map(({ value, label, icon }) => (
+    <div className="inline-flex items-center p-1 rounded-xl bg-surface-raised border border-border gap-1">
+      {MODES.map(({ value, label, title, icon }) => (
         <button
           key={value}
           onClick={() => !disabled && onChange(value)}
           disabled={disabled}
+          title={title}
           className={[
             "flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150",
             mode === value
               ? "bg-brand text-white shadow-sm shadow-brand/30"
-              : "text-slate-400 hover:text-slate-200 disabled:cursor-not-allowed",
+              : "text-muted hover:text-foreground disabled:cursor-not-allowed",
           ].join(" ")}
         >
           {icon}
@@ -486,14 +490,14 @@ export default function AnalyzePage() {
 
       <main className="flex-1 pt-16">
         {/* -- Page header -- */}
-        <section className="relative overflow-hidden border-b border-white/5">
+        <section className="relative overflow-hidden border-b border-border">
           <div aria-hidden className="pointer-events-none absolute inset-0">
             <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[600px] h-[250px] rounded-full bg-brand/8 blur-[80px]" />
           </div>
           <div className="relative mx-auto max-w-3xl px-6 pt-10 pb-8">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors mb-5 group"
+              className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-foreground transition-colors mb-5 group"
               suppressHydrationWarning
             >
               <svg
@@ -514,7 +518,7 @@ export default function AnalyzePage() {
 
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">
                   Document Analyzer
                 </h1>
                 <p className="text-slate-400 text-sm">
@@ -593,7 +597,7 @@ export default function AnalyzePage() {
           )}
 
           {/* Upload card */}
-          <div className="rounded-3xl border border-white/8 bg-white/[0.015] p-6 md:p-8 shadow-2xl shadow-black/40">
+          <div className="rounded-3xl border border-border bg-surface p-6 md:p-8 shadow-2xl shadow-black/20">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-9 h-9 rounded-xl bg-brand/15 border border-brand/20 flex items-center justify-center">
                 <svg
@@ -611,7 +615,7 @@ export default function AnalyzePage() {
                 </svg>
               </div>
               <div>
-                <h2 className="text-white font-semibold text-base">
+                <h2 className="text-foreground font-semibold text-base">
                   Upload Document
                 </h2>
                 <p className="text-slate-500 text-xs mt-0.5">
@@ -679,7 +683,7 @@ export default function AnalyzePage() {
                 </svg>
               </div>
               <div>
-                <p className="text-white font-semibold text-base">
+                <p className="text-foreground font-semibold text-base">
                   {mode === "presentation"
                     ? "Generating your presentation…"
                     : "Generating your test…"}
@@ -690,7 +694,7 @@ export default function AnalyzePage() {
                     : "Crafting questions from your document. Usually faster than 30 sec — larger files may take longer."}
                 </p>
               </div>
-              <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+              <div className="w-full h-1.5 bg-surface-raised rounded-full overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-brand-dark to-brand-light rounded-full animate-[progress-indeterminate_1.5s_ease-in-out_infinite]" />
               </div>
             </div>
@@ -707,7 +711,7 @@ export default function AnalyzePage() {
               <div className="flex justify-end">
                 <button
                   onClick={handleRegenerate}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 text-slate-400 hover:text-white hover:border-white/20 text-xs transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-muted hover:text-foreground hover:border-foreground/20 text-xs transition-colors"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -728,7 +732,7 @@ export default function AnalyzePage() {
                 <div className="flex justify-end">
                   <button
                     onClick={handleRegenerate}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 text-slate-400 hover:text-white hover:border-white/20 text-xs transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-muted hover:text-foreground hover:border-foreground/20 text-xs transition-colors"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

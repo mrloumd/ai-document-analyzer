@@ -102,7 +102,7 @@ export default function PPTConfigForm({
         : "Enter a number between 3 and 20";
 
   return (
-    <div className="rounded-3xl border border-white/8 bg-white/[0.015] p-6 md:p-8 shadow-2xl shadow-black/40">
+    <div className="rounded-3xl border border-border bg-surface p-6 md:p-8 shadow-2xl shadow-black/40">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="w-9 h-9 rounded-xl bg-brand/15 border border-brand/20 flex items-center justify-center">
@@ -121,17 +121,17 @@ export default function PPTConfigForm({
           </svg>
         </div>
         <div>
-          <h2 className="text-white font-semibold text-base">
+          <h2 className="text-foreground font-semibold text-base">
             Presentation Settings
           </h2>
-          <p className="text-slate-500 text-xs mt-0.5">
+          <p className="text-muted text-xs mt-0.5">
             Configure your AI-generated slide deck
           </p>
         </div>
       </div>
 
       {!isEnabled && (
-        <div className="mb-5 flex items-center gap-2 rounded-xl bg-white/[0.03] border border-white/8 px-4 py-3 text-sm text-slate-500">
+        <div className="mb-5 flex items-center gap-2 rounded-xl bg-surface-raised border border-border px-4 py-3 text-sm text-muted">
           <svg
             className="w-4 h-4 shrink-0"
             fill="none"
@@ -152,9 +152,9 @@ export default function PPTConfigForm({
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Number of slides */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-3">
+          <label className="block text-sm font-medium text-foreground/80 mb-3">
             Number of slides
-            <span className="ml-2 text-xs text-slate-500 font-normal">
+            <span className="ml-2 text-xs text-muted font-normal">
               (3–{maxSlides})
             </span>
           </label>
@@ -170,7 +170,7 @@ export default function PPTConfigForm({
                   setNumSlides(v);
               }}
               disabled={isGenerating}
-              className="w-24 bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-white text-sm text-center focus:outline-none focus:border-brand/50 focus:bg-white/[0.06] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-24 bg-surface-raised border border-border rounded-lg px-3 py-2 text-foreground text-sm text-center focus:outline-none focus:border-brand/50 focus:bg-surface-raised transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <div className="flex gap-2">
               {(isFree ? [3, 4, 5] : [5, 8, 10, 15]).map((n) => (
@@ -179,7 +179,7 @@ export default function PPTConfigForm({
                   type="button"
                   onClick={() => setNumSlides(String(n))}
                   disabled={isGenerating}
-                  className="px-2.5 py-1 rounded-md text-xs font-medium border border-white/10 text-slate-400 hover:text-white hover:border-brand/40 hover:bg-brand/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-2.5 py-1 rounded-md text-xs font-medium border border-border text-muted hover:text-foreground hover:border-brand/40 hover:bg-brand/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {n}
                 </button>
@@ -202,7 +202,7 @@ export default function PPTConfigForm({
 
         {/* Tone selector */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-3">
+          <label className="block text-sm font-medium text-foreground/80 mb-3">
             Presentation tone
           </label>
           <div className="grid grid-cols-3 gap-2">
@@ -215,8 +215,8 @@ export default function PPTConfigForm({
                 className={[
                   "flex flex-col gap-1 px-3 py-3 rounded-xl border text-left transition-all duration-150 disabled:cursor-not-allowed",
                   tone === value
-                    ? "bg-brand/15 border-brand/40 text-white"
-                    : "bg-white/[0.02] border-white/8 text-slate-400 hover:border-white/15 hover:text-slate-300",
+                    ? "bg-brand/15 border-brand/40 text-foreground"
+                    : "bg-surface border-border text-muted hover:border-foreground/15 hover:text-foreground/80",
                 ].join(" ")}
               >
                 <span className="text-sm font-semibold leading-none">
@@ -232,10 +232,10 @@ export default function PPTConfigForm({
 
         {/* Template selector */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-3">
+          <label className="block text-sm font-medium text-foreground/80 mb-3">
             Slide template
             {isFree && (
-              <span className="ml-2 text-xs text-slate-500 font-normal">
+              <span className="ml-2 text-xs text-muted font-normal">
                 Light &amp; Dark require credits
               </span>
             )}
@@ -250,25 +250,30 @@ export default function PPTConfigForm({
                   className={[
                     "relative flex flex-col gap-2 p-3 rounded-xl border text-left transition-all duration-150",
                     locked
-                      ? "cursor-not-allowed opacity-50 border-white/8 bg-white/[0.02]"
+                      ? "cursor-not-allowed opacity-50 border-border bg-surface"
                       : template === value
                         ? "cursor-pointer bg-brand/15 border-brand/40"
-                        : "cursor-pointer bg-white/[0.02] border-white/8 hover:border-white/15",
+                        : "cursor-pointer bg-surface border-border hover:border-foreground/15",
                   ].join(" ")}
                 >
                   {/* Mini slide preview */}
                   <div
-                    className="w-full h-8 rounded-md overflow-hidden shrink-0"
+                    className="w-full h-14 rounded-md overflow-hidden shrink-0"
                     style={{ background: preview.bg }}
                   >
                     <div
-                      className="h-2.5 w-full flex items-center px-1.5"
+                      className="h-4 w-full flex items-center px-2"
                       style={{ background: preview.strip }}
                     >
                       <div
-                        className="h-1 w-4 rounded-sm"
+                        className="h-1.5 w-10 rounded-sm opacity-90"
                         style={{ background: preview.accent }}
                       />
+                    </div>
+                    <div className="px-2 pt-1.5 space-y-1">
+                      <div className="h-1 w-8 rounded-sm opacity-50" style={{ background: preview.accent }} />
+                      <div className="h-0.5 w-11 rounded-sm opacity-30" style={{ background: preview.accent }} />
+                      <div className="h-0.5 w-7 rounded-sm opacity-30" style={{ background: preview.accent }} />
                     </div>
                   </div>
                   <div>
@@ -276,16 +281,16 @@ export default function PPTConfigForm({
                       className={[
                         "text-xs font-semibold leading-none mb-0.5",
                         locked
-                          ? "text-slate-500"
+                          ? "text-muted"
                           : template === value
-                            ? "text-white"
-                            : "text-slate-300",
+                            ? "text-foreground"
+                            : "text-foreground/80",
                       ].join(" ")}
                     >
                       {label}
                       {locked && (
                         <svg
-                          className="inline-block ml-1 w-3 h-3 text-slate-500"
+                          className="inline-block ml-1 w-3 h-3 text-muted"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -299,7 +304,7 @@ export default function PPTConfigForm({
                         </svg>
                       )}
                     </p>
-                    <p className="text-[10px] text-slate-500 leading-tight">
+                    <p className="text-[10px] text-muted leading-tight">
                       {locked ? "Available for purchased credits" : description}
                     </p>
                   </div>
@@ -343,9 +348,9 @@ export default function PPTConfigForm({
 
         {/* Credit notice */}
         {isEnabled && (
-          <p className="text-center text-xs text-slate-500">
+          <p className="text-center text-xs text-muted">
             Generating will use{" "}
-            <span className="text-slate-300 font-medium">1 credit</span>
+            <span className="text-foreground/80 font-medium">1 credit</span>
           </p>
         )}
 

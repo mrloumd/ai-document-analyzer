@@ -43,14 +43,14 @@ export default function UpgradePage() {
       <Header />
       <main className="flex-1 pt-16 min-h-screen">
         {/* Page header */}
-        <section className="relative overflow-hidden border-b border-white/5">
+        <section className="relative overflow-hidden border-b border-border">
           <div aria-hidden className="pointer-events-none absolute inset-0">
             <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[600px] h-[250px] rounded-full bg-brand/8 blur-[80px]" />
           </div>
           <div className="relative mx-auto max-w-3xl px-6 pt-10 pb-8">
             <Link
               href="/analyze"
-              className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors mb-5 group"
+              className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-foreground transition-colors mb-5 group"
               suppressHydrationWarning
             >
               <svg
@@ -70,7 +70,7 @@ export default function UpgradePage() {
             </Link>
 
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">
                 Top Up Credits
               </h1>
               <p className="text-slate-400 text-sm">
@@ -103,13 +103,13 @@ export default function UpgradePage() {
 
           <div className="grid sm:grid-cols-2 gap-5">
             {/* Starter */}
-            <div className="rounded-3xl border border-white/8 bg-white/[0.015] p-6 md:p-8 shadow-2xl shadow-black/40 flex flex-col">
+            <div className="rounded-3xl border border-border bg-surface p-6 md:p-8 shadow-2xl shadow-black/20 flex flex-col">
               <div className="mb-5">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-slate-400 font-medium mb-4">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border bg-surface-raised text-xs text-muted font-medium mb-4">
                   Starter
                 </div>
                 <div className="flex items-end gap-1.5">
-                  <span className="text-4xl font-bold text-white">$3</span>
+                  <span className="text-4xl font-bold text-foreground">$3</span>
                   <span className="text-slate-500 text-sm mb-1.5">
                     one-time
                   </span>
@@ -149,7 +149,7 @@ export default function UpgradePage() {
               <button
                 onClick={() => handleBuy("starter")}
                 disabled={!!loading}
-                className="w-full py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl border border-border bg-surface-raised hover:bg-border text-foreground font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading === "starter" ? (
                   <>
@@ -192,7 +192,7 @@ export default function UpgradePage() {
                   Best value
                 </div>
                 <div className="flex items-end gap-1.5">
-                  <span className="text-4xl font-bold text-white">$9</span>
+                  <span className="text-4xl font-bold text-foreground">$9</span>
                   <span className="text-slate-500 text-sm mb-1.5">
                     one-time
                   </span>
@@ -210,7 +210,7 @@ export default function UpgradePage() {
                 ].map((f) => (
                   <li
                     key={f}
-                    className="flex items-start gap-2 text-sm text-slate-300"
+                    className="flex items-start gap-2 text-sm text-foreground/80"
                   >
                     <svg
                       className="w-4 h-4 text-brand-light shrink-0 mt-0.5"
@@ -265,7 +265,7 @@ export default function UpgradePage() {
             </div>
           </div>
 
-          <p className="text-center text-xs text-slate-600 mt-6">
+          <p className="text-center text-xs text-muted mt-6">
             Payments processed securely by PayMongo. No credit card data is
             stored on our servers.
           </p>

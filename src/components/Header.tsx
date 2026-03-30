@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
+import { ThemeToggle } from "./ThemeToggle";
 
 function CreditBadge({ credits }: { credits: number }) {
   const color =
@@ -12,8 +13,16 @@ function CreditBadge({ credits }: { credits: number }) {
         ? "text-amber-400 border-amber-500/30 bg-amber-500/10"
         : "text-rose-400 border-rose-500/30 bg-rose-500/10";
 
+  const tip =
+    credits >= 2
+      ? `${credits} credits — good to go`
+      : credits === 1
+        ? "1 credit left — running low"
+        : "No credits — top up to continue";
+
   return (
     <span
+      title={tip}
       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-xs font-semibold ${color}`}
     >
       <svg
@@ -55,7 +64,7 @@ function UserMenu({
     <div className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 rounded-xl px-2 py-1 hover:bg-white/5 transition-colors"
+        className="flex items-center gap-2 rounded-xl px-2 py-1 hover:bg-surface-raised transition-colors"
       >
         <CreditBadge credits={credits} />
         <div className="w-8 h-8 rounded-full overflow-hidden bg-brand/30 border border-brand/30 flex items-center justify-center text-xs font-bold text-brand-light">
@@ -88,9 +97,9 @@ function UserMenu({
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-2 w-52 z-50 rounded-2xl border border-white/8 bg-[#091818] shadow-2xl shadow-black/60 overflow-hidden">
-            <div className="px-4 py-3 border-b border-white/5">
-              <p className="text-white text-sm font-semibold truncate">
+          <div className="absolute right-0 top-full mt-2 w-52 z-50 rounded-2xl border border-border bg-surface shadow-2xl shadow-black/60 overflow-hidden">
+            <div className="px-4 py-3 border-b border-border">
+              <p className="text-foreground text-sm font-semibold truncate">
                 {name}
               </p>
               <p className="text-slate-500 text-xs mt-0.5">
@@ -135,7 +144,7 @@ function UserMenu({
                 setOpen(false);
                 signOut({ callbackUrl: "/" });
               }}
-              className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-slate-400 hover:text-white hover:bg-white/5 transition-colors text-left"
+              className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-muted hover:text-foreground hover:bg-surface-raised transition-colors text-left"
             >
               <svg
                 className="w-4 h-4"
@@ -163,7 +172,7 @@ export default function Header() {
   const { data: session, status } = useSession();
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-[#040e0e]/80 backdrop-blur-md">
+    <header className="fixed top-0 inset-x-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
       <div className="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link
@@ -187,31 +196,31 @@ export default function Header() {
               />
             </svg>
           </div>
-          <span className="text-white font-semibold text-base tracking-tight">
+          <span className="text-foreground font-semibold text-base tracking-tight">
             StudyMind
             {/* <span className="text-brand-light"> AI</span> */}
           </span>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6 text-sm text-slate-400">
+        <nav className="hidden md:flex items-center gap-6 text-sm text-muted">
           <a
             href="/#features"
-            className="hover:text-white transition-colors"
+            className="hover:text-foreground transition-colors"
             suppressHydrationWarning
           >
             Features
           </a>
           <a
             href="/#how-it-works"
-            className="hover:text-white transition-colors"
+            className="hover:text-foreground transition-colors"
             suppressHydrationWarning
           >
             How it works
           </a>
 
           {status === "loading" && (
-            <div className="w-24 h-8 rounded-xl bg-white/5 animate-pulse" />
+            <div className="w-24 h-8 rounded-xl bg-surface-raised animate-pulse" />
           )}
           {status === "unauthenticated" && (
             <Link
@@ -229,10 +238,12 @@ export default function Header() {
               credits={session.user.credits ?? 0}
             />
           )}
+          <ThemeToggle />
         </nav>
 
         {/* Mobile */}
         <div className="md:hidden flex items-center gap-3">
+          <ThemeToggle />
           {status === "authenticated" && session?.user && (
             <UserMenu
               name={session.user.name ?? "User"}

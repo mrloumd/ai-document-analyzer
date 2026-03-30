@@ -116,18 +116,18 @@ export default function FileUpload({
             "flex flex-col items-center justify-center text-center gap-5 py-16 px-8",
             isDragging
               ? "border-brand bg-brand/10 scale-[1.01]"
-              : "border-white/10 bg-white/[0.02] hover:border-brand/50 hover:bg-white/[0.04]",
+              : "border-border bg-surface hover:border-brand/50 hover:bg-surface-raised",
           ].join(" ")}
         >
           {/* Icon */}
           <div
             className={[
               "w-16 h-16 rounded-2xl flex items-center justify-center transition-colors",
-              isDragging ? "bg-brand/20" : "bg-white/5",
+              isDragging ? "bg-brand/20" : "bg-surface-raised",
             ].join(" ")}
           >
             <svg
-              className={`w-8 h-8 ${isDragging ? "text-brand" : "text-slate-400"}`}
+              className={`w-8 h-8 ${isDragging ? "text-brand" : "text-muted"}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -142,10 +142,10 @@ export default function FileUpload({
           </div>
 
           <div>
-            <p className="text-white font-semibold text-lg mb-1">
+            <p className="text-foreground font-semibold text-lg mb-1">
               {isDragging ? "Drop it here" : "Drop your file here"}
             </p>
-            <p className="text-slate-400 text-sm">
+            <p className="text-muted text-sm">
               or{" "}
               <span className="text-brand underline underline-offset-2">
                 click to browse
@@ -153,7 +153,7 @@ export default function FileUpload({
             </p>
           </div>
 
-          <div className="flex items-center gap-3 text-xs text-slate-500">
+          <div className="flex items-center gap-3 text-xs text-muted">
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-brand"></span>
               PDF
@@ -162,7 +162,7 @@ export default function FileUpload({
               <span className="w-1.5 h-1.5 rounded-full bg-brand-light"></span>
               DOCX
             </span>
-            <span className="text-slate-600">·</span>
+            <span className="text-muted">·</span>
             <span>Max 10 MB</span>
           </div>
 
@@ -216,7 +216,7 @@ export default function FileUpload({
   if (status === "uploading" || status === "analyzing") {
     const isUploading = status === "uploading";
     return (
-      <div className="w-full rounded-2xl border border-white/10 bg-white/[0.02] p-8">
+      <div className="w-full rounded-2xl border border-border bg-surface p-8">
         <div className="flex items-center gap-4 mb-6">
           {/* File icon */}
           <div className="w-12 h-12 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center shrink-0">
@@ -235,8 +235,8 @@ export default function FileUpload({
             </svg>
           </div>
           <div className="min-w-0">
-            <p className="text-white font-medium truncate">{fileName}</p>
-            <p className="text-slate-400 text-sm">
+            <p className="text-foreground font-medium truncate">{fileName}</p>
+            <p className="text-muted text-sm">
               {fileSize ? formatBytes(fileSize) : ""}
             </p>
           </div>
@@ -244,7 +244,7 @@ export default function FileUpload({
 
         {/* Status label */}
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-medium text-slate-300 flex items-center gap-2">
+          <span className="text-sm font-medium text-foreground/80 flex items-center gap-2">
             {isUploading ? (
               <>
                 <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse"></span>
@@ -283,7 +283,7 @@ export default function FileUpload({
         </div>
 
         {/* Progress bar */}
-        <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+        <div className="w-full h-1.5 bg-surface-raised rounded-full overflow-hidden">
           {isUploading ? (
             <div
               className="h-full bg-gradient-to-r from-brand-dark to-brand-light rounded-full transition-all duration-300"
@@ -295,7 +295,7 @@ export default function FileUpload({
         </div>
 
         {status === "analyzing" && (
-          <p className="mt-4 text-xs text-slate-500 text-center">
+          <p className="mt-4 text-xs text-muted text-center">
             We're reading your document and extracting insights…
           </p>
         )}
@@ -305,7 +305,7 @@ export default function FileUpload({
             <button
               type="button"
               onClick={onCancel}
-              className="text-xs text-slate-500 hover:text-slate-300 underline underline-offset-2 transition-colors"
+              className="text-xs text-muted hover:text-foreground underline underline-offset-2 transition-colors"
             >
               Cancel upload
             </button>
@@ -336,13 +336,13 @@ export default function FileUpload({
             </svg>
           </div>
           <div className="min-w-0">
-            <p className="text-white font-medium truncate">{fileName}</p>
+            <p className="text-foreground font-medium truncate">{fileName}</p>
             <p className="text-emerald-400 text-sm">Analysis complete</p>
           </div>
         </div>
         <button
           onClick={onReset}
-          className="shrink-0 px-4 py-2 rounded-lg border border-white/10 text-slate-300 hover:text-white hover:border-white/20 text-sm transition-colors"
+          className="shrink-0 px-4 py-2 rounded-lg border border-border text-muted hover:text-foreground hover:border-foreground/20 text-sm transition-colors"
         >
           New file
         </button>

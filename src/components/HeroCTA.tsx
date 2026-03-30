@@ -31,7 +31,7 @@ export function HeroButtons() {
       </Link>
       <a
         href="#features"
-        className="px-6 py-3 rounded-xl border border-white/10 text-slate-300 hover:text-white hover:border-white/20 font-medium text-sm transition-colors"
+        className="px-6 py-3 rounded-xl border border-border text-muted hover:text-foreground hover:border-foreground/20 font-medium text-sm transition-colors"
         suppressHydrationWarning
       >
         See Features
@@ -46,7 +46,7 @@ export function BannerCTA() {
 
   return (
     <>
-      <p className="text-slate-400 text-base mb-10 max-w-md mx-auto">
+      <p className="text-muted text-base mb-10 max-w-md mx-auto">
         {loggedIn
           ? "Upload a document and generate a summary, test, or presentation in seconds."
           : "Summarize, test, and present — all from a single file upload. Sign up for 3 free credits."}

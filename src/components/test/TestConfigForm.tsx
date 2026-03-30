@@ -114,10 +114,10 @@ export default function TestConfigForm({
   };
 
   const inputCls =
-    "w-20 bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-white text-sm text-center font-mono focus:outline-none focus:border-brand/60 focus:ring-1 focus:ring-brand/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed";
+    "w-20 bg-surface-raised border border-border rounded-lg px-3 py-2 text-foreground text-sm text-center font-mono focus:outline-none focus:border-brand/60 focus:ring-1 focus:ring-brand/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed";
 
   return (
-    <div className="rounded-3xl border border-white/8 bg-white/[0.015] p-6 md:p-8 shadow-2xl shadow-black/40">
+    <div className="rounded-3xl border border-border bg-surface p-6 md:p-8 shadow-2xl shadow-black/40">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="w-9 h-9 rounded-xl bg-brand/15 border border-brand/20 flex items-center justify-center shrink-0">
@@ -136,8 +136,8 @@ export default function TestConfigForm({
           </svg>
         </div>
         <div>
-          <h2 className="text-white font-semibold text-base">Configure Test</h2>
-          <p className="text-slate-500 text-xs mt-0.5">
+          <h2 className="text-foreground font-semibold text-base">Configure Test</h2>
+          <p className="text-muted text-xs mt-0.5">
             {isEnabled
               ? "Set the number of questions for each type"
               : "Upload a document first to configure your test"}
@@ -147,10 +147,10 @@ export default function TestConfigForm({
 
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Total Questions */}
-        <div className="flex items-center justify-between gap-4 p-4 rounded-2xl border border-white/8 bg-white/[0.02]">
+        <div className="flex items-center justify-between gap-4 p-4 rounded-2xl border border-border bg-surface-raised/40">
           <div>
-            <p className="text-white text-sm font-medium">Total Questions</p>
-            <p className="text-slate-500 text-xs mt-0.5">
+            <p className="text-foreground text-sm font-medium">Total Questions</p>
+            <p className="text-muted text-xs mt-0.5">
               Set your target question count
             </p>
           </div>
@@ -183,7 +183,7 @@ export default function TestConfigForm({
         {/* Question Types */}
         <div className="space-y-2">
           <div className="flex items-center justify-between px-1">
-            <p className="text-slate-400 text-xs font-medium uppercase tracking-wider">
+            <p className="text-muted text-xs font-medium uppercase tracking-wider">
               Question Types
             </p>
             <button
@@ -195,13 +195,13 @@ export default function TestConfigForm({
               Auto-distribute
             </button>
           </div>
-          <div className="rounded-2xl border border-white/8 bg-white/[0.02] overflow-hidden divide-y divide-white/5">
+          <div className="rounded-2xl border border-border bg-surface-raised/40 overflow-hidden divide-y divide-border">
             {TYPES.map(({ key, label, icon }) => (
               <div key={key} className="flex items-center gap-4 px-4 py-3">
                 <div className="w-6 h-6 rounded-md bg-brand/10 border border-brand/20 flex items-center justify-center shrink-0">
                   <span className="text-brand text-xs font-bold">{icon}</span>
                 </div>
-                <span className="text-slate-300 text-sm flex-1">{label}</span>
+                <span className="text-foreground/80 text-sm flex-1">{label}</span>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -306,9 +306,9 @@ export default function TestConfigForm({
 
         {/* Credit notice */}
         {isEnabled && (
-          <p className="text-center text-xs text-slate-500">
+          <p className="text-center text-xs text-muted">
             Generating will use{" "}
-            <span className="text-slate-300 font-medium">1 credit</span>
+            <span className="text-foreground/80 font-medium">1 credit</span>
           </p>
         )}
 
@@ -362,7 +362,7 @@ export default function TestConfigForm({
         </button>
 
         {!isEnabled && (
-          <p className="text-center text-slate-600 text-xs">
+          <p className="text-center text-muted text-xs">
             Upload a document above to activate test generation.
           </p>
         )}

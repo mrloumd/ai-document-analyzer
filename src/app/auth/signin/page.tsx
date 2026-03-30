@@ -1,13 +1,29 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+const AUTH_ERRORS: Record<string, string> = {
+  OAuthAccountNotLinked: "This email is linked to a different sign-in method.",
+  OAuthSignin: "Could not connect to Google. Please try again.",
+  OAuthCallback: "Sign-in failed. Please try again.",
+  OAuthCreateAccount: "Could not create your account. Please try again.",
+  Default: "Something went wrong. Please try again.",
+};
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get("error");
+    if (error) setAuthError(AUTH_ERRORS[error] ?? AUTH_ERRORS.Default);
+  }, []);
 
   async function handleGoogleSignIn() {
     setIsLoading(true);
+    setAuthError(null);
     await signIn("google", { callbackUrl: "/analyze" });
   }
 
@@ -23,7 +39,7 @@ export default function SignInPage() {
 
       <div className="relative w-full max-w-sm">
         {/* Card */}
-        <div className="rounded-3xl border border-white/8 bg-white/[0.02] p-8 shadow-2xl shadow-black/60 backdrop-blur-sm">
+        <div className="rounded-3xl border border-border bg-surface p-8 shadow-2xl shadow-black/40 backdrop-blur-sm">
           {/* Logo */}
           <div className="flex flex-col items-center gap-4 mb-8">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center shadow-xl shadow-brand/30">
@@ -42,7 +58,7 @@ export default function SignInPage() {
               </svg>
             </div>
             <div className="text-center">
-              <h1 className="text-xl font-bold text-white">
+              <h1 className="text-xl font-bold text-foreground">
                 Welcome to StudyMind
                 {/* <span className="text-brand-light"> AI</span> */}
               </h1>
@@ -69,7 +85,7 @@ export default function SignInPage() {
                 />
               </svg>
             </div>
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-foreground/80">
               You&apos;ll receive{" "}
               <span className="text-brand-light font-semibold">
                 3 free credit
@@ -77,6 +93,16 @@ export default function SignInPage() {
               on signup
             </p>
           </div>
+
+          {/* Auth error */}
+          {authError && (
+            <div className="flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 mb-4">
+              <svg className="w-4 h-4 text-red-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-red-300 text-sm">{authError}</p>
+            </div>
+          )}
 
           {/* Google sign-in button */}
           <button
@@ -127,7 +153,7 @@ export default function SignInPage() {
             {isLoading ? "Signing in…" : "Continue with Google"}
           </button>
 
-          <p className="text-center text-xs text-slate-600 mt-5">
+          <p className="text-center text-xs text-muted mt-5">
             By signing in, you agree to our terms of service
           </p>
         </div>
