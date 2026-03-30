@@ -191,16 +191,16 @@ export default function DownloadButton({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 top-full mt-1.5 w-48 rounded-xl border border-white/10 bg-[#071212] shadow-xl shadow-black/60 z-20 overflow-hidden">
+        <div className="absolute right-0 top-full mt-1.5 w-48 rounded-xl border border-border bg-surface shadow-xl shadow-black/60 z-20 overflow-hidden">
           {options.map(({ format, label, ext, icon }) => (
             <button
               key={format}
               onClick={() => handleDownload(format)}
-              className="w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:text-white hover:bg-white/5 text-sm transition-colors"
+              className="w-full flex items-center gap-3 px-4 py-3 text-foreground/80 hover:text-foreground hover:bg-surface-raised text-sm transition-colors"
             >
               <span className="text-brand-light">{icon}</span>
               <span className="flex-1 text-left">{label}</span>
-              <span className="text-slate-600 text-xs">{ext}</span>
+              <span className="text-muted text-xs">{ext}</span>
             </button>
           ))}
         </div>

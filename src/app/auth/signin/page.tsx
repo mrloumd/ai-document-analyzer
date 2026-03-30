@@ -39,7 +39,7 @@ export default function SignInPage() {
 
       <div className="relative w-full max-w-sm">
         {/* Card */}
-        <div className="rounded-3xl border border-white/8 bg-white/[0.02] p-8 shadow-2xl shadow-black/60 backdrop-blur-sm">
+        <div className="rounded-3xl border border-border bg-surface p-8 shadow-2xl shadow-black/40 backdrop-blur-sm">
           {/* Logo */}
           <div className="flex flex-col items-center gap-4 mb-8">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center shadow-xl shadow-brand/30">
@@ -58,7 +58,7 @@ export default function SignInPage() {
               </svg>
             </div>
             <div className="text-center">
-              <h1 className="text-xl font-bold text-white">
+              <h1 className="text-xl font-bold text-foreground">
                 Welcome to StudyMind
                 {/* <span className="text-brand-light"> AI</span> */}
               </h1>
@@ -85,7 +85,7 @@ export default function SignInPage() {
                 />
               </svg>
             </div>
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-foreground/80">
               You&apos;ll receive{" "}
               <span className="text-brand-light font-semibold">
                 3 free credit
@@ -153,7 +153,7 @@ export default function SignInPage() {
             {isLoading ? "Signing in…" : "Continue with Google"}
           </button>
 
-          <p className="text-center text-xs text-slate-600 mt-5">
+          <p className="text-center text-xs text-muted mt-5">
             By signing in, you agree to our terms of service
           </p>
         </div>

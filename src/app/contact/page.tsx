@@ -54,14 +54,14 @@ export default function ContactPage() {
 
       <main className="flex-1 pt-16">
         {/* -- Page header -- */}
-        <section className="relative overflow-hidden border-b border-white/5">
+        <section className="relative overflow-hidden border-b border-border">
           <div aria-hidden className="pointer-events-none absolute inset-0">
             <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[500px] h-[200px] rounded-full bg-brand/8 blur-[80px]" />
           </div>
           <div className="relative mx-auto max-w-3xl px-6 pt-10 pb-8">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors mb-5 group"
+              className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-foreground transition-colors mb-5 group"
               suppressHydrationWarning
             >
               <svg
@@ -75,10 +75,10 @@ export default function ContactPage() {
               </svg>
               Back to home
             </Link>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">
               Contact Us
             </h1>
-            <p className="text-slate-400 text-sm">
+            <p className="text-muted text-sm">
               Have a question, feedback, or issue? We&apos;d love to hear from you.
             </p>
           </div>
@@ -90,19 +90,19 @@ export default function ContactPage() {
             {/* Left - info */}
             <div className="sm:col-span-2 space-y-6">
               <div>
-                <p className="text-white font-semibold text-sm mb-1">Email</p>
-                <p className="text-slate-400 text-sm">We reply within 24 hours.</p>
+                <p className="text-foreground font-semibold text-sm mb-1">Email</p>
+                <p className="text-muted text-sm">You&apos;ll receive a response within 24 hours.</p>
               </div>
               <div>
-                <p className="text-white font-semibold text-sm mb-1">Support</p>
-                <p className="text-slate-400 text-sm">
+                <p className="text-foreground font-semibold text-sm mb-1">Support</p>
+                <p className="text-muted text-sm">
                   For billing, credits, or account issues — include your account
                   email in the message.
                 </p>
               </div>
               <div>
-                <p className="text-white font-semibold text-sm mb-1">Feedback</p>
-                <p className="text-slate-400 text-sm">
+                <p className="text-foreground font-semibold text-sm mb-1">Feedback</p>
+                <p className="text-muted text-sm">
                   Feature requests and bug reports are always welcome.
                 </p>
               </div>
@@ -123,9 +123,9 @@ export default function ContactPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <p className="text-white font-semibold text-base mb-1">Message sent!</p>
-                  <p className="text-slate-400 text-sm">
-                    Thanks for reaching out. We&apos;ll get back to you shortly.
+                  <p className="text-foreground font-semibold text-base mb-1">Message sent!</p>
+                  <p className="text-muted text-sm">
+                    Thanks for reaching out. I&apos;ll get back to you shortly.
                   </p>
                   <button
                     onClick={() => setSuccess(false)}
@@ -137,11 +137,11 @@ export default function ContactPage() {
               ) : (
                 <form
                   onSubmit={handleSubmit}
-                  className="rounded-2xl border border-white/8 bg-white/[0.02] p-6 space-y-4"
+                  className="rounded-2xl border border-border bg-surface p-6 space-y-4"
                 >
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-medium text-slate-400 mb-1.5">
+                      <label className="block text-xs font-medium text-muted mb-1.5">
                         Name
                       </label>
                       <input
@@ -150,11 +150,11 @@ export default function ContactPage() {
                         onChange={handleChange}
                         required
                         placeholder="Your name"
-                        className="w-full rounded-xl border border-white/8 bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-brand/50 focus:bg-white/[0.06] transition-colors"
+                        className="w-full rounded-xl border border-border bg-surface-raised px-3.5 py-2.5 text-sm text-foreground placeholder-muted focus:outline-none focus:border-brand/50 focus:bg-surface-raised transition-colors"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-400 mb-1.5">
+                      <label className="block text-xs font-medium text-muted mb-1.5">
                         Email
                       </label>
                       <input
@@ -164,13 +164,13 @@ export default function ContactPage() {
                         onChange={handleChange}
                         required
                         placeholder="you@example.com"
-                        className="w-full rounded-xl border border-white/8 bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-brand/50 focus:bg-white/[0.06] transition-colors"
+                        className="w-full rounded-xl border border-border bg-surface-raised px-3.5 py-2.5 text-sm text-foreground placeholder-muted focus:outline-none focus:border-brand/50 focus:bg-surface-raised transition-colors"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-400 mb-1.5">
+                    <label className="block text-xs font-medium text-muted mb-1.5">
                       Subject
                     </label>
                     <input
@@ -179,12 +179,12 @@ export default function ContactPage() {
                       onChange={handleChange}
                       required
                       placeholder="What's this about?"
-                      className="w-full rounded-xl border border-white/8 bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-brand/50 focus:bg-white/[0.06] transition-colors"
+                      className="w-full rounded-xl border border-border bg-surface-raised px-3.5 py-2.5 text-sm text-foreground placeholder-muted focus:outline-none focus:border-brand/50 focus:bg-surface-raised transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-400 mb-1.5">
+                    <label className="block text-xs font-medium text-muted mb-1.5">
                       Message
                     </label>
                     <textarea
@@ -194,7 +194,7 @@ export default function ContactPage() {
                       required
                       rows={5}
                       placeholder="Tell us more..."
-                      className="w-full rounded-xl border border-white/8 bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-brand/50 focus:bg-white/[0.06] transition-colors resize-none"
+                      className="w-full rounded-xl border border-border bg-surface-raised px-3.5 py-2.5 text-sm text-foreground placeholder-muted focus:outline-none focus:border-brand/50 focus:bg-surface-raised transition-colors resize-none"
                     />
                   </div>
 

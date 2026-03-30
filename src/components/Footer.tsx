@@ -4,7 +4,7 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-white/5 bg-[#040e0e]/60 pt-12 pb-8 px-6">
+    <footer className="border-t border-border bg-background/60 pt-12 pb-8 px-6">
       <div className="mx-auto max-w-6xl">
         {/* Top row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-10">
@@ -30,7 +30,7 @@ export default function Footer() {
                   />
                 </svg>
               </div>
-              <span className="text-white font-semibold text-sm">
+              <span className="text-foreground font-semibold text-sm">
                 StudyMind
               </span>
             </Link>
@@ -42,7 +42,7 @@ export default function Footer() {
 
           {/* Product */}
           <div>
-            <p className="text-white text-xs font-semibold mb-3 uppercase tracking-wider">
+            <p className="text-foreground text-xs font-semibold mb-3 uppercase tracking-wider">
               Product
             </p>
             <ul className="space-y-2.5">
@@ -53,7 +53,7 @@ export default function Footer() {
                 <li key={l.href}>
                   <Link
                     href={l.href}
-                    className="text-slate-500 text-xs hover:text-slate-300 transition-colors"
+                    className="text-muted text-xs hover:text-foreground transition-colors"
                     suppressHydrationWarning
                   >
                     {l.label}
@@ -65,7 +65,7 @@ export default function Footer() {
 
           {/* Resources */}
           <div>
-            <p className="text-white text-xs font-semibold mb-3 uppercase tracking-wider">
+            <p className="text-foreground text-xs font-semibold mb-3 uppercase tracking-wider">
               Resources
             </p>
             <ul className="space-y-2.5">
@@ -76,7 +76,7 @@ export default function Footer() {
                 <li key={l.href}>
                   <a
                     href={l.href}
-                    className="text-slate-500 text-xs hover:text-slate-300 transition-colors"
+                    className="text-muted text-xs hover:text-foreground transition-colors"
                     suppressHydrationWarning
                   >
                     {l.label}
@@ -88,7 +88,7 @@ export default function Footer() {
 
           {/* Support */}
           <div>
-            <p className="text-white text-xs font-semibold mb-3 uppercase tracking-wider">
+            <p className="text-foreground text-xs font-semibold mb-3 uppercase tracking-wider">
               Support
             </p>
             <ul className="space-y-2.5">
@@ -96,7 +96,7 @@ export default function Footer() {
                 <li key={l.href}>
                   <Link
                     href={l.href}
-                    className="text-slate-500 text-xs hover:text-slate-300 transition-colors"
+                    className="text-muted text-xs hover:text-foreground transition-colors"
                     suppressHydrationWarning
                   >
                     {l.label}
@@ -108,8 +108,8 @@ export default function Footer() {
         </div>
 
         {/* Bottom row */}
-        <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-slate-600 text-xs">
+        <div className="border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-muted text-xs">
             &copy; {year} StudyMind. All rights reserved.
           </p>
           {/* <p className="text-slate-700 text-xs">

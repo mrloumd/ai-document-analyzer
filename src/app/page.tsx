@@ -225,7 +225,7 @@ export default function HomePage() {
             </div>
 
             {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight text-white mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight text-foreground mb-6">
               Summaries, Tests &amp; Slides{" "}
               <span className="bg-gradient-to-r from-brand-light via-brand to-brand-dark bg-clip-text text-transparent">
                 from Any Document
@@ -243,10 +243,10 @@ export default function HomePage() {
             <HeroButtons />
 
             {/* Stats */}
-            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 border-t border-white/5 pt-10">
+            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 border-t border-border pt-10">
               {STATS.map((s) => (
                 <div key={s.label} className="flex flex-col items-center gap-1">
-                  <span className="text-white font-semibold text-base">
+                  <span className="text-foreground font-semibold text-base">
                     {s.value}
                   </span>
                   <span className="text-slate-500 text-xs">{s.label}</span>
@@ -257,15 +257,15 @@ export default function HomePage() {
 
           {/* App preview mockup */}
           <div className="relative mx-auto max-w-2xl px-6 pb-24">
-            <div className="rounded-2xl border border-white/10 bg-[#040d0d] p-5 shadow-2xl shadow-black/60">
+            <div className="rounded-2xl border border-border bg-surface p-5 shadow-2xl shadow-black/20">
               {/* Chrome bar */}
               <div className="flex items-center gap-2 mb-5">
                 <div className="flex gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-white/8" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-white/8" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-white/8" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-foreground/8" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-foreground/8" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-foreground/8" />
                 </div>
-                <div className="flex-1 h-4 rounded-md bg-white/[0.04] mx-2" />
+                <div className="flex-1 h-4 rounded-md bg-surface-raised mx-2" />
                 <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md border border-emerald-500/20 bg-emerald-500/8">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   <span className="text-[10px] text-emerald-400 font-medium">
@@ -275,7 +275,7 @@ export default function HomePage() {
               </div>
 
               {/* Mode toggle */}
-              <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white/[0.04] border border-white/8 mb-4 w-fit">
+              <div className="flex items-center gap-1.5 p-1 rounded-xl bg-surface-raised border border-border mb-4 w-fit">
                 {[
                   { label: "Summary", active: false },
                   { label: "Test", active: false },
@@ -284,7 +284,7 @@ export default function HomePage() {
                   <div
                     key={label}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium ${
-                      active ? "bg-brand text-white" : "text-slate-500"
+                      active ? "bg-brand text-white" : "text-muted"
                     }`}
                   >
                     {label}
@@ -293,7 +293,7 @@ export default function HomePage() {
               </div>
 
               {/* File row */}
-              <div className="flex items-center gap-3 p-3 rounded-xl border border-white/8 bg-white/[0.02] mb-4">
+              <div className="flex items-center gap-3 p-3 rounded-xl border border-border bg-surface-raised mb-4">
                 <div className="w-7 h-7 rounded-md bg-brand/15 border border-brand/20 flex items-center justify-center shrink-0">
                   <svg
                     className="w-3.5 h-3.5 text-brand"
@@ -310,8 +310,8 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="h-2 w-40 rounded-full bg-white/20 mb-1.5" />
-                  <div className="h-1.5 w-20 rounded-full bg-white/10" />
+                  <div className="h-2 w-40 rounded-full bg-foreground/20 mb-1.5" />
+                  <div className="h-1.5 w-20 rounded-full bg-foreground/10" />
                 </div>
                 <div className="h-6 w-24 rounded-lg bg-brand/20 border border-brand/25" />
               </div>
@@ -325,19 +325,19 @@ export default function HomePage() {
                 ].map((slide, i) => (
                   <div
                     key={i}
-                    className="rounded-xl border border-white/8 bg-white/[0.02] p-3 flex items-start gap-3"
+                    className="rounded-xl border border-border bg-surface-raised p-3 flex items-start gap-3"
                   >
                     <div className="w-5 h-5 rounded-full bg-brand/15 border border-brand/25 shrink-0 mt-0.5" />
                     <div className="flex-1 space-y-1.5">
                       <div
-                        className={`h-2 ${slide.w} rounded-full bg-white/20`}
+                        className={`h-2 ${slide.w} rounded-full bg-foreground/20`}
                       />
                       <div className="space-y-1 pt-0.5">
                         {Array.from({ length: slide.bullets }).map((_, j) => (
                           <div key={j} className="flex items-center gap-1.5">
                             <div className="w-1.5 h-1.5 rounded-full bg-brand/50 shrink-0" />
                             <div
-                              className="h-1.5 rounded-full bg-white/10"
+                              className="h-1.5 rounded-full bg-foreground/10"
                               style={{ width: `${60 + ((i + j) % 3) * 12}%` }}
                             />
                           </div>
@@ -354,14 +354,14 @@ export default function HomePage() {
         {/* -- Features -- */}
         <section
           id="features"
-          className="border-t border-white/5 bg-white/[0.01] py-20 px-6"
+          className="border-t border-border bg-surface-raised/40 py-20 px-6"
         >
           <div className="mx-auto max-w-5xl">
             <div className="text-center mb-14">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-brand/20 bg-brand/8 text-brand-light text-xs font-medium mb-4">
                 Features
               </div>
-              <h2 className="text-white font-bold text-3xl sm:text-4xl mb-4">
+              <h2 className="text-foreground font-bold text-3xl sm:text-4xl mb-4">
                 One document, three powerful outputs
               </h2>
               <p className="text-slate-400 text-base max-w-xl mx-auto">
@@ -374,14 +374,14 @@ export default function HomePage() {
               {FEATURES.map((f) => (
                 <div
                   key={f.title}
-                  className="rounded-2xl border border-white/8 bg-white/[0.02] p-6 hover:border-brand/25 hover:bg-white/[0.035] transition-all duration-200"
+                  className="rounded-2xl border border-border bg-surface p-6 hover:border-brand/25 hover:bg-surface-raised transition-all duration-200"
                 >
                   <div
                     className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 ${f.iconColor} ${f.iconBg}`}
                   >
                     {f.icon}
                   </div>
-                  <h3 className="text-white font-semibold text-base mb-2">
+                  <h3 className="text-foreground font-semibold text-base mb-2">
                     {f.title}
                   </h3>
                   <p className="text-slate-400 text-sm leading-relaxed">
@@ -394,13 +394,13 @@ export default function HomePage() {
         </section>
 
         {/* -- Use cases -- */}
-        <section className="border-t border-white/5 py-20 px-6">
+        <section className="border-t border-border py-20 px-6">
           <div className="mx-auto max-w-5xl">
             <div className="text-center mb-14">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-brand/20 bg-brand/8 text-brand-light text-xs font-medium mb-4">
                 Use Cases
               </div>
-              <h2 className="text-white font-bold text-3xl sm:text-4xl mb-4">
+              <h2 className="text-foreground font-bold text-3xl sm:text-4xl mb-4">
                 Built for educators, students &amp; professionals
               </h2>
               <p className="text-slate-400 text-base max-w-xl mx-auto">
@@ -483,12 +483,12 @@ export default function HomePage() {
               ].map((uc) => (
                 <div
                   key={uc.role}
-                  className="rounded-2xl border border-white/8 bg-white/[0.02] p-6 hover:border-brand/25 hover:bg-white/[0.035] transition-all duration-200"
+                  className="rounded-2xl border border-border bg-surface p-6 hover:border-brand/25 hover:bg-surface-raised transition-all duration-200"
                 >
                   <div className="w-10 h-10 rounded-xl border border-brand/20 bg-brand/10 text-brand flex items-center justify-center mb-4">
                     {uc.icon}
                   </div>
-                  <h3 className="text-white font-semibold text-base mb-4">
+                  <h3 className="text-foreground font-semibold text-base mb-4">
                     {uc.role}
                   </h3>
                   <ul className="space-y-2.5">
@@ -513,13 +513,13 @@ export default function HomePage() {
         {/* -- How it works -- */}
         <section
           id="how-it-works"
-          className="border-t border-white/5 bg-white/[0.01] py-20 px-6"
+          className="border-t border-border bg-surface-raised/40 py-20 px-6"
         >
           <div className="mx-auto max-w-4xl text-center mb-12">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-brand/20 bg-brand/8 text-brand-light text-xs font-medium mb-4">
               How it works
             </div>
-            <h2 className="text-white font-bold text-3xl sm:text-4xl mb-3">
+            <h2 className="text-foreground font-bold text-3xl sm:text-4xl mb-3">
               From document to output in three steps
             </h2>
             <p className="text-slate-400 text-base">
@@ -531,15 +531,15 @@ export default function HomePage() {
             {HOW_IT_WORKS.map((item) => (
               <div
                 key={item.step}
-                className="rounded-2xl border border-white/8 bg-white/[0.02] p-6 relative overflow-hidden"
+                className="rounded-2xl border border-border bg-surface p-6 relative overflow-hidden"
               >
-                <div className="absolute top-4 right-4 text-white/5 font-bold text-5xl leading-none select-none">
+                <div className="absolute top-4 right-4 text-foreground/5 font-bold text-5xl leading-none select-none">
                   {item.step}
                 </div>
                 <div className="w-10 h-10 rounded-xl border border-brand/20 bg-brand/10 text-brand-light flex items-center justify-center mb-4">
                   {item.icon}
                 </div>
-                <h3 className="text-white font-semibold text-base mb-2">
+                <h3 className="text-foreground font-semibold text-base mb-2">
                   {item.title}
                 </h3>
                 <p className="text-slate-400 text-sm leading-relaxed">
@@ -551,12 +551,12 @@ export default function HomePage() {
         </section>
 
         {/* -- CTA Banner -- */}
-        <section className="border-t border-white/5 py-24 px-6 relative overflow-hidden">
+        <section className="border-t border-border py-24 px-6 relative overflow-hidden">
           <div aria-hidden className="pointer-events-none absolute inset-0">
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[300px] rounded-full bg-brand/10 blur-[100px]" />
           </div>
           <div className="relative mx-auto max-w-2xl text-center">
-            <h2 className="text-white font-bold text-3xl sm:text-4xl mb-4">
+            <h2 className="text-foreground font-bold text-3xl sm:text-4xl mb-4">
               Ready to work smarter with your documents?
             </h2>
             <BannerCTA />

@@ -13,7 +13,7 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="ml-auto flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors"
+      className="ml-auto flex items-center gap-1 text-xs text-muted hover:text-foreground transition-colors"
       title="Copy to clipboard"
     >
       {copied ? (
@@ -51,11 +51,11 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-white/8 bg-white/[0.025] overflow-hidden">
+    <div className="rounded-2xl border border-border bg-surface overflow-hidden">
       <div
-        className={`px-5 py-4 border-b border-white/8 flex items-center gap-3 ${color}`}
+        className={`px-5 py-4 border-b border-border flex items-center gap-3 ${color}`}
       >
-        <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 rounded-lg bg-surface-raised flex items-center justify-center shrink-0">
           {icon}
         </div>
         <span className="font-semibold text-sm tracking-wide uppercase opacity-80">
@@ -76,7 +76,7 @@ function BulletList({ items, color }: { items: string[]; color: string }) {
           <span
             className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${color}`}
           />
-          <span className="text-slate-300 text-sm leading-relaxed">{item}</span>
+          <span className="text-foreground/80 text-sm leading-relaxed">{item}</span>
         </li>
       ))}
     </ul>
@@ -92,8 +92,8 @@ export default function ResultDisplay({
       {/* Section header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-white font-semibold text-xl">Analysis Results</h2>
-          <p className="text-slate-400 text-sm mt-0.5 truncate max-w-xs">
+          <h2 className="text-foreground font-semibold text-xl">Analysis Results</h2>
+          <p className="text-muted text-sm mt-0.5 truncate max-w-xs">
             {fileName}
           </p>
         </div>
@@ -126,7 +126,7 @@ export default function ResultDisplay({
         color="text-brand-light"
         copyText={result.summary}
       >
-        <p className="text-slate-300 text-sm leading-7 whitespace-pre-line">
+        <p className="text-foreground/80 text-sm leading-7 whitespace-pre-line">
           {result.summary}
         </p>
       </SectionCard>
