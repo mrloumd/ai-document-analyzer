@@ -1,4 +1,4 @@
-import Header from "@/components/Header";
+import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { HeroButtons, BannerCTA } from "@/components/HeroCTA";
 
@@ -204,7 +204,7 @@ const HOW_IT_WORKS = [
 export default function HomePage() {
   return (
     <>
-      <Header />
+      <Navbar />
 
       <main className="flex-1 pt-16">
         {/* -- Hero -- */}
@@ -365,7 +365,7 @@ export default function HomePage() {
                 One document, three powerful outputs
               </h2>
               <p className="text-slate-400 text-base max-w-xl mx-auto">
-                StudyMind turns your documents into summaries, exams, and
+                LogosMind turns your documents into summaries, exams, and
                 presentations — so you can teach, share, and present faster.
               </p>
             </div>
@@ -404,7 +404,7 @@ export default function HomePage() {
                 Built for educators, students &amp; professionals
               </h2>
               <p className="text-slate-400 text-base max-w-xl mx-auto">
-                Whether you are in a classroom or a boardroom, StudyMind saves
+                Whether you are in a classroom or a boardroom, LogosMind saves
                 you hours.
               </p>
             </div>

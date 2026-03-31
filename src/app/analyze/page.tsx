@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Header from "@/components/Header";
+import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FileUpload from "@/components/FileUpload";
 import ResultDisplay from "@/components/summary/ResultDisplay";
@@ -486,7 +486,7 @@ export default function AnalyzePage() {
 
   return (
     <>
-      <Header />
+      <Navbar />
 
       <main className="flex-1 pt-16">
         {/* -- Page header -- */}

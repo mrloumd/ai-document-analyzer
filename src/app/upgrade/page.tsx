@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import Header from "@/components/Header";
+import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 type PackId = "starter" | "pro";
@@ -40,7 +40,7 @@ export default function UpgradePage() {
 
   return (
     <>
-      <Header />
+      <Navbar />
       <main className="flex-1 pt-16 min-h-screen">
         {/* Page header */}
         <section className="relative overflow-hidden border-b border-border">

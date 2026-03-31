@@ -26,17 +26,17 @@ export async function POST(req: NextRequest) {
     });
 
     await transporter.sendMail({
-      from: `"StudyMind Contact" <${process.env.GMAIL_USER}>`,
+      from: `"LogosMind Contact" <${process.env.GMAIL_USER}>`,
       to: process.env.GMAIL_USER,
       replyTo: email,
-      subject: `[StudyMind] ${subject}`,
+      subject: `[LogosMind] ${subject}`,
       html: `
         <div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#040e0e;color:#f8fafc;padding:32px;border-radius:12px;border:1px solid rgba(255,255,255,0.08)">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
             <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#1E9AA0,#167a7f);display:flex;align-items:center;justify-content:center">
               <span style="color:#fff;font-weight:700;font-size:14px">S</span>
             </div>
-            <span style="font-weight:600;font-size:16px;color:#fff">StudyMind</span>
+            <span style="font-weight:600;font-size:16px;color:#fff">LogosMind</span>
           </div>
           <h2 style="margin:0 0 24px;font-size:18px;color:#27b5bc">New message from contact form</h2>
           <table style="width:100%;border-collapse:collapse">

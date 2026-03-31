@@ -1,4 +1,4 @@
-# StudyMind AI
+# LogosMind 
 
 An AI-powered document analyzer that lets you upload PDFs and DOCX files to get instant summaries, generate practice tests, and create presentations — built with Next.js, OpenAI, and MongoDB.
 
