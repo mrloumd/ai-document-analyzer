@@ -31,7 +31,7 @@ export default function Footer() {
                 </svg>
               </div>
               <span className="text-foreground font-semibold text-sm">
-                StudyMind
+                LogosMind
               </span>
             </Link>
             <p className="text-slate-500 text-xs leading-relaxed max-w-[180px]">
@@ -110,7 +110,7 @@ export default function Footer() {
         {/* Bottom row */}
         <div className="border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-muted text-xs">
-            &copy; {year} StudyMind. All rights reserved.
+            &copy; {year} LogosMind. All rights reserved.
           </p>
           {/* <p className="text-slate-700 text-xs">
             Built with Next.js &amp; TypeScript

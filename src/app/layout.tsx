@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "StudyMind — Instant Document Analysis",
+  title: "LogosMind — Instant Document Analysis",
   description:
     "Upload any PDF or DOCX and get AI-powered summaries, key points, and strategic insights in seconds.",
   keywords: ["document analysis", "AI", "PDF", "DOCX", "summarization"],

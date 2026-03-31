@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Header from "@/components/Header";
+import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 type FormState = {
@@ -50,7 +50,7 @@ export default function ContactPage() {
 
   return (
     <>
-      <Header />
+      <Navbar />
 
       <main className="flex-1 pt-16">
         {/* -- Page header -- */}
@@ -76,10 +76,10 @@ export default function ContactPage() {
               Back to home
             </Link>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">
-              Contact Us
+              Contact
             </h1>
             <p className="text-muted text-sm">
-              Have a question, feedback, or issue? We&apos;d love to hear from you.
+             Got a question, feedback, spotted a bug, or just want to connect?
             </p>
           </div>
         </section>

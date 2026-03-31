@@ -59,7 +59,7 @@ export default function SignInPage() {
             </div>
             <div className="text-center">
               <h1 className="text-xl font-bold text-foreground">
-                Welcome to StudyMind
+                Welcome to LogosMind
                 {/* <span className="text-brand-light"> AI</span> */}
               </h1>
               <p className="text-slate-400 text-sm mt-1">

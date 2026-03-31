@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import Header from "@/components/Header";
+import Navbar from "@/components/Navbar";
 
 export default function UpgradeSuccessPage() {
   const { update } = useSession();
@@ -19,7 +19,7 @@ export default function UpgradeSuccessPage() {
 
   return (
     <>
-      <Header />
+      <Navbar />
       <main className="flex-1 pt-16 min-h-screen flex items-center justify-center px-6">
         <div className="w-full max-w-md text-center">
           {/* Success icon */}
